@@ -8,7 +8,7 @@ namespace Pocom.DAL.Entities
 {
     public class Comment
     {
-        Guid Id { get; set; }
+        public Guid Id { get; set; }
         public string Text { get; set; }
         public DateTime CreationDate { get; set; }
         public UserAccount Author { get; set; }
