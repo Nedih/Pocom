@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pocom.DAL.Interfaces;
+using Pocom.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,45 +9,48 @@ using System.Threading.Tasks;
 
 namespace Pocom.DAL.Repositories
 {
-    public class Repository : IRepository
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private DbContext context;
+        private DbContext _context;
+        private DbSet<TEntity> _dbSet;
 
         public Repository(PocomContext context)
         {
-            this.context = context;
+            this._context = context;
+            this._dbSet = context.Set<TEntity>();
         }
-        
-        TEntity IRepository.FirstorDefault<TEntity>(Func<TEntity, bool> predicate)
+
+        public TEntity FirstOrDefault(Func<TEntity, bool> predicate)
         {
-            return this.context.Set<TEntity>().FirstOrDefault(predicate);
+            return this._dbSet.FirstOrDefault(predicate);
         }
-        IList<TEntity> IRepository.GetWhere<TEntity>(Func<TEntity, bool> predicate)
+        public IList<TEntity> GetWhere(Func<TEntity, bool> predicate)
         {
-            return this.context.Set<TEntity>().Where(predicate).ToList();
+            return this._dbSet.Where(predicate).ToList();
         }
-        int IRepository.Count<TEntity>(Func<TEntity, bool> predicate)
+        public int Count(Func<TEntity, bool> predicate)
         {
-            return this.context.Set<TEntity>().Count(predicate);
+            return this._dbSet.Count(predicate);
         }
-        void IRepository.AddAndSave<TEntity>(TEntity entity)
+        public void AddAndSave(TEntity entity)
         {
-            this.context.Set<TEntity>().Add(entity);
-            this.context.SaveChanges();
+            this._dbSet.Add(entity);
+            this._context.SaveChanges();
         }
-        void IRepository.RemoveAndSave<TEntity>(TEntity entity)
+        public void RemoveAndSave(TEntity entity)
         {
-            this.context.Set<TEntity>().Remove(entity);
-            this.context.SaveChanges();
+            this._dbSet.Remove(entity);
+            this._context.SaveChanges();
         }
-        void IRepository.UpdateAndSave<TEntity>(TEntity entity)
+        public void UpdateAndSave(TEntity entity)
         {
-            this.context.Entry(entity).State = EntityState.Modified;
-            this.context.SaveChanges();
+            this._context.Entry(entity).State = EntityState.Modified;
+            this._context.SaveChanges();
         }
         public async Task SaveAsync()
         {
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
+
     }
 }

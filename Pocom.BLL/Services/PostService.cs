@@ -24,7 +24,9 @@ namespace Pocom.BLL.Services
 
         public void DeleteAsync(string id)
         {
-            _repository.RemoveAndSave(id);
+            var entity = _repository.FirstOrDefault(x => x.Id.ToString() == id);
+            if (entity != null)
+                _repository.RemoveAndSave(entity);
         }
 
         public Post FirstOrDefaultAsync(Func<Post, bool> predicate)

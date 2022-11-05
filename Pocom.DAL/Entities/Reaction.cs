@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Pocom.DAL.Entities
 {
-    public class Reaction : IEntity
+    public class Reaction
     {
-        Guid Id { get; set; }
+        public Guid Id { get; set; }
         public UserAccount Author { get; set; }
         public Post Post { get; set; }
     }
