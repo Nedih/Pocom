@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+//using System.Data.Entity;
 using Pocom.DAL.Interfaces;
 using Pocom.DAL.Entities;
 using System;

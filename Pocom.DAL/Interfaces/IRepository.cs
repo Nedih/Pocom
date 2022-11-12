@@ -7,8 +7,6 @@ using Pocom.DAL.Entities;
 
 namespace Pocom.DAL.Interfaces
 {
-    public interface IRepository<TEntity> where TEntity : class
-    {
         void AddAndSave(TEntity entity);
         void UpdateAndSave(TEntity entity);
         void RemoveAndSave(TEntity entity);
