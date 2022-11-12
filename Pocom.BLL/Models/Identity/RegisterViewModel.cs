@@ -11,22 +11,30 @@ namespace Pocom.BLL.Models.Identity
     public class RegisterViewModel
     {
         [Required]
-        [Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]
-        [Display(Name = "Год рождения")]
-        public int Year { get; set; }
+        public string Name { get; set; }
+
+        [Required]
+        public string Login { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        public string DateOfBirth { get; set; }
+        // public DateOnly DateOfBirth { get; set; }
+
+        [Required]
+        [DataType(DataType.PhoneNumber)]
+        public string PhoneNumber { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
         public string Password { get; set; }
 
         [Required]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
         [DataType(DataType.Password)]
-        [Display(Name = "Подтвердить пароль")]
         public string PasswordConfirm { get; set; }
     }
 }

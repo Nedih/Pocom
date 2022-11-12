@@ -16,12 +16,14 @@ namespace Pocom.Api.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpPost("/register")]
+        [Route("sign-up")]
+        [HttpPost]
         public async Task<bool> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                UserAccount user = new UserAccount { Email = model.Email, UserName = model.Email };
+                UserAccount user = new UserAccount { Email = model.Email, UserName = model.Email, Name = model.Name,
+                    Login = model.Login, PhoneNumber = model.PhoneNumber, DateOfBirth = model.DateOfBirth };
                 // добавляем пользователя
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -40,5 +42,35 @@ namespace Pocom.Api.Controllers
             }
             return false;
         }
+
+        [Route("sign-in")]
+        [HttpPost]      
+        public async Task<bool> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result =
+                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                }
+            }
+            return false;
+        }
+
+        [Route("sign-out")]
+        [HttpPost]
+        public async Task<bool> Logout()
+        {
+            // удаляем аутентификационные куки
+            await _signInManager.SignOutAsync();
+            return true;
+        }
+
     }
 }
