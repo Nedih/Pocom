@@ -12,7 +12,7 @@ namespace Pocom.DAL.Entities
         public string Text { get; set; }
         public DateTime CreationDate { get; set; }
         public UserAccount Author { get; set; }
-        public List<Reaction> Reactions { get; set; }   
-        public List<Comment> Comments { get; set; }
+        public IList<Reaction>? Reactions { get; set; } = new List<Reaction>();
+        public IList<Comment>? Comments { get; set; } = new List<Comment>();
     }
 }
