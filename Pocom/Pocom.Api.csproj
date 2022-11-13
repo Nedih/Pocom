@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Pocom.BLL\Pocom.BLL.csproj" />
     <ProjectReference Include="..\Pocom.DAL\Pocom.DAL.csproj" />
   </ItemGroup>
 

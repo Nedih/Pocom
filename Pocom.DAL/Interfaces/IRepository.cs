@@ -12,7 +12,7 @@ namespace Pocom.DAL.Interfaces
         void AddAndSave(TEntity entity);
         void UpdateAndSave(TEntity entity);
         void RemoveAndSave(TEntity entity);
-        IList<TEntity> GetWhere(Func<TEntity, bool> predicate);
+        IQueryable<TEntity> GetWhere(Func<TEntity, bool> predicate);
         TEntity FirstOrDefault(Func<TEntity, bool> predicate);
         int Count(Func<TEntity, bool> predicate);
         Task SaveAsync();

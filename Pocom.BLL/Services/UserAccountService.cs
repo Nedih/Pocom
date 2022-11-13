@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Pocom.BLL.Services
 {
-    internal class UserAccountService : IUserAccountService
+    public class UserAccountService : IUserAccountService
     {
     }
 }

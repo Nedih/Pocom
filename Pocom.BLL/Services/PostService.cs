@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Pocom.BLL.Services
 {
-    internal class PostService : IPostService
+    public class PostService : IPostService
     {
         private readonly IRepository<Post> _repository;
 
@@ -34,7 +34,7 @@ namespace Pocom.BLL.Services
             return _repository.FirstOrDefault(predicate);
         }
 
-        public IEnumerable<Post> GetAsync(Func<Post, bool> predicate)
+        public IQueryable<Post> GetAsync(Func<Post, bool> predicate)
         {
             return _repository.GetWhere(predicate);
         }

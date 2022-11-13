@@ -25,9 +25,9 @@ namespace Pocom.DAL.Repositories
         {
             return this._dbSet.FirstOrDefault(predicate);
         }
-        public IList<TEntity> GetWhere(Func<TEntity, bool> predicate)
+        public IQueryable<TEntity> GetWhere(Func<TEntity, bool> predicate)
         {
-            return this._dbSet.Where(predicate).ToList();
+            return this._dbSet.Where(predicate).AsQueryable();
         }
         public int Count(Func<TEntity, bool> predicate)
         {

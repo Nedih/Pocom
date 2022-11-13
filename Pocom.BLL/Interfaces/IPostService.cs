@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Pocom.BLL.Interfaces
 {
-    internal interface IPostService
+    public interface IPostService
     {
-        public IEnumerable<Post> GetAsync(Func<Post, bool> predicate);
+        public IQueryable<Post> GetAsync(Func<Post, bool> predicate);
         public Post FirstOrDefaultAsync(Func<Post, bool> predicate);
         public void CreateAsync(Post item);
         public void UpdateAsync(Post item);

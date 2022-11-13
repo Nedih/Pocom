@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Pocom.BLL.Interfaces
 {
-    internal interface IUserAccountService
+    public interface IUserAccountService
     {
     }
 }
