@@ -18,7 +18,7 @@ namespace Pocom.Api.Controllers
 
         [Route("sign-up")]
         [HttpPost]
-        public async Task<bool> Register(RegisterViewModel model)
+        public async Task<bool> Register([FromBody]RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
