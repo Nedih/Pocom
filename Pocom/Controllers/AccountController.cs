@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Pocom.BLL.Models.Identity;
 using Pocom.DAL.Entities;
@@ -29,7 +30,7 @@ namespace Pocom.Api.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, false);
-                    return StatusCode(200);
+                    return StatusCode(201);
                 }
                 else
                 {
@@ -44,7 +45,7 @@ namespace Pocom.Api.Controllers
 
         [Route("sign-in")]
         [HttpPost]      
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -63,6 +64,7 @@ namespace Pocom.Api.Controllers
         }
 
         [Route("sign-out")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
