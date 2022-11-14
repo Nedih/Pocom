@@ -18,19 +18,18 @@ namespace Pocom.Api.Controllers
 
         [Route("sign-up")]
         [HttpPost]
-        public async Task<bool> Register([FromBody]RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
                 UserAccount user = new UserAccount { Email = model.Email, UserName = model.Email, Name = model.Name,
                     Login = model.Login, PhoneNumber = model.PhoneNumber, DateOfBirth = model.DateOfBirth };
-                // добавляем пользователя
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // установка куки
                     await _signInManager.SignInAsync(user, false);
-                    return true;
+                    return StatusCode(200);
                 }
                 else
                 {
@@ -40,12 +39,12 @@ namespace Pocom.Api.Controllers
                     }
                 }
             }
-            return false;
+            return StatusCode(401);
         }
 
         [Route("sign-in")]
         [HttpPost]      
-        public async Task<bool> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -53,23 +52,22 @@ namespace Pocom.Api.Controllers
                     await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
                 if (result.Succeeded)
                 {
-                    return true;
+                    return StatusCode(200);
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                    ModelState.AddModelError("", "Wrong username and (or) password");
                 }
             }
-            return false;
+            return StatusCode(401);
         }
 
         [Route("sign-out")]
         [HttpPost]
-        public async Task<bool> Logout()
+        public async Task<IActionResult> Logout()
         {
-            // удаляем аутентификационные куки
             await _signInManager.SignOutAsync();
-            return true;
+            return StatusCode(401);
         }
 
     }
