@@ -70,8 +70,8 @@ namespace Pocom.Api.Controllers
             return StatusCode(401);
         }*/
 
+        //[Authorize]
         [Authorize]
-
         [HttpPost("sign-out")]
         public async Task<IActionResult> Logout()
         {
