@@ -25,7 +25,11 @@ namespace Pocom.Api.Extensions
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtConfig["validIssuer"],
-                    ValidAudience = jwtConfig["validAudience"],
+                    ValidAudiences = new List<string>
+                    {
+                        jwtConfig["validAudienceBack"],
+                        jwtConfig["validAudienceFront"]
+                    },
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
                 };
             });

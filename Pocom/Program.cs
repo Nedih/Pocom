@@ -5,6 +5,9 @@ using Pocom.DAL.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Pocom.Api.Extensions;
+using Pocom.BLL.Interfaces;
+using Pocom.BLL.Services;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +21,6 @@ builder.Services.AddIdentity<UserAccount, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.ConfigureJWT(builder.Configuration);
-
-
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(option => option.LoginPath = "/Auth/login");
@@ -39,7 +40,17 @@ builder.Services.AddCors(options =>
                       });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(config =>
+{
+    config.CacheProfiles.Add("50SecondsCaching", new CacheProfile
+    {
+        Duration = 50
+    });
+});
+
+builder.Services.AddResponseCaching();
+
+builder.Services.AddTransient<IUserAuthService, UserAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();
@@ -56,6 +67,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseResponseCaching();
 
 app.UseAuthentication();
 app.UseAuthorization();
