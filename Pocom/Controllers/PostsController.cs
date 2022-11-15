@@ -35,23 +35,11 @@ public class PostsController : ControllerBase
         if (sortBy != null)
         {
             var sortByArray = sortBy.Split(',');
-            switch (sortByArray.Length)
+            for (int i = 0; i < sortByArray.Length; i++)
             {
-                case 2:
-                    items = items
-                        .OrderBy(sortByArray[0].Replace(" desc", ""), sortByArray[0].EndsWith("desc"))
-                        .ThenBy(sortByArray[1].Replace(" desc", ""), sortByArray[1].EndsWith("desc"));
-                    break;
-                case 1:
-                    items = items
-                        .OrderBy(sortByArray[0].Replace(" desc", ""), sortByArray[0].EndsWith("desc"));
-                    break;
-                case 0:
-                    items = items
-                        .OrderBy("CreationDate", true);
-                    break;
-                default:
-                    break;
+                items = i == 0
+                    ? items.OrderBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"))
+                    : items.ThenBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"));
             }
         }
 

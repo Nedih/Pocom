@@ -5,14 +5,14 @@ namespace Pocom.Api.Extensions;
 
 public static class QueryableExtensions
 {
-    public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> source, string propertyName, bool desc)
+    public static IQueryable<T> OrderBy<T>(this IQueryable<T> source, string propertyName, bool desc)
     {
         return desc ? source.OrderByDescending(ToLambda<T>(propertyName)) : source.OrderBy(ToLambda<T>(propertyName));
     }
 
-    public static IOrderedQueryable<T> ThenBy<T>(this IOrderedQueryable<T> source, string propertyName, bool desc)
+    public static IQueryable<T> ThenBy<T>(this IQueryable<T> source, string propertyName, bool desc)
     {
-        return desc ? source.ThenByDescending(ToLambda<T>(propertyName)) : source.ThenBy(ToLambda<T>(propertyName));
+        return desc ? ((IOrderedQueryable<T>)source).ThenByDescending(ToLambda<T>(propertyName)) : ((IOrderedQueryable<T>)source).ThenBy(ToLambda<T>(propertyName));
     }
 
 
