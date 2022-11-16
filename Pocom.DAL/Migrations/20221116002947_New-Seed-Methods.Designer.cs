@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pocom.DAL;
 
@@ -11,9 +12,10 @@ using Pocom.DAL;
 namespace Pocom.DAL.Migrations
 {
     [DbContext(typeof(PocomContext))]
-    partial class PocomContextModelSnapshot : ModelSnapshot
+    [Migration("20221116002947_New-Seed-Methods")]
+    partial class NewSeedMethods
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

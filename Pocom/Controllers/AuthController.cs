@@ -10,7 +10,7 @@ namespace Pocom.Api.Controllers
 {
     public class AuthController : Controller
     { 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("/data")]
         public IActionResult Data()
         {

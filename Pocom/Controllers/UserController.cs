@@ -1,92 +1,54 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Pocom.BLL.Models;
+using Pocom.BLL.Models.Identity;
+using Pocom.BLL.Services;
 using Pocom.DAL.Entities;
 
 namespace Pocom.Api.Controllers
 {
+    [Route("api/user")]
     public class UserController : Controller
     {
-        UserManager<UserAccount> _userManager;
+        UserService _userService;
 
-        public UserController(UserManager<UserAccount> userManager)
+        public UserController(UserService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
-        public IActionResult Index() => View(_userManager.Users.ToList());
 
-        public IActionResult Create() => View();
-        /*
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IEnumerable<UserDTO> Get()
+        {
+
+            return _userService.GetUsers();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<UserDTO> GetUser(string email)
+        {
+
+            return await _userService.GetUser(email);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateUserViewModel model)
+        public async Task<bool> Create(RegisterViewModel user)
         {
-            if (ModelState.IsValid)
-            {
-                UserAccount user = new UserAccount { Email = model.Email, UserName = model.Email, Year = model.Year };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
-            }
-            return View(model);
+
+            return await _userService.Create(user);
         }
 
-        public async Task<IActionResult> Edit(string id)
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        public async Task<bool> Update(string id, UserDTO user)
         {
-            UserAccount user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            EditUserViewModel model = new EditUserViewModel { Id = user.Id, Email = user.Email, Year = user.Year };
-            return View(model);
+
+            return await _userService.Update(id, user);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(EditUserViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                UserAccount user = await _userManager.FindByIdAsync(model.Id);
-                if (user != null)
-                {
-                    user.Email = model.Email;
-                    user.UserName = model.Email;
-                    user.Year = model.Year;
-
-                    var result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
-                    }
-                }
-            }
-            return View(model);
-        }
-        */
-        [HttpPost]
-        public async Task<ActionResult> Delete(string id)
-        {
-            UserAccount user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-            {
-                IdentityResult result = await _userManager.DeleteAsync(user);
-            }
-            return RedirectToAction("Index");
-        }
     }
 }

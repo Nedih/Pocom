@@ -24,53 +24,6 @@ namespace Pocom.Api.Controllers
             _userAccountService = userAccountService;
         }
 
-        /*[Route("sign-up")]
-        [HttpPost]
-        public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                UserAccount user = new UserAccount { Email = model.Email, UserName = model.Email, Name = model.Name,
-                    Login = model.Login, PhoneNumber = model.PhoneNumber, DateOfBirth = model.DateOfBirth };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, false);
-                    return StatusCode(201);
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
-            }
-            return StatusCode(401);
-        }
-
-        [Route("sign-in")]
-        [HttpPost]      
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result =
-                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-                if (result.Succeeded)
-                {
-                    return StatusCode(200);
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Wrong username and (or) password");
-                }
-            }
-            return StatusCode(401);
-        }*/
-
-        //[Authorize]
         [Authorize]
         [HttpPost("sign-out")]
         public async Task<IActionResult> Logout()
