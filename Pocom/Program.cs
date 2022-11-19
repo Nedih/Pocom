@@ -8,6 +8,8 @@ using Pocom.Api.Extensions;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Services;
 using Microsoft.AspNetCore.Mvc;
+using Pocom.DAL.Interfaces;
+using Pocom.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +53,9 @@ builder.Services.AddControllers(config =>
 builder.Services.AddResponseCaching();
 
 builder.Services.AddTransient<IUserAuthService, UserAuthService>();
+
+builder.Services.AddTransient<IRepository<UserAccount>, Repository<UserAccount>>();
+builder.Services.AddTransient<IUserService, UserService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();

@@ -19,15 +19,12 @@ namespace Pocom.BLL.Services
     {
         private readonly UserManager<UserAccount> userManager;
 
-        private readonly RoleManager<UserAccount> roleManager;
-
         private readonly IRepository<UserAccount> repo;
 
-        public UserService(IRepository<UserAccount> repo, UserManager<UserAccount> userManager, RoleManager<UserAccount> roleManager)
+        public UserService(IRepository<UserAccount> repo, UserManager<UserAccount> userManager)
         {
             this.repo = repo;
             this.userManager = userManager;
-            this.roleManager = roleManager;
         }
 
         public IEnumerable<UserDTO> GetUsers()
@@ -57,22 +54,26 @@ namespace Pocom.BLL.Services
         public async Task<UserDTO> GetUser(string email)
         {
             var user = await userManager.FindByEmailAsync(email);
-            return new UserDTO
+            if (user != null)
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Login = user.Login,
-                DateOfBirth = user.DateOfBirth,
-                PhoneNumber = user.PhoneNumber
-            };
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Login = user.Login,
+                    DateOfBirth = user.DateOfBirth,
+                    PhoneNumber = user.PhoneNumber
+                };
+            }
+            else return new UserDTO();//IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
         }
 
         public async Task<IdentityResult> Update(string id, UserDTO userDto)
         {
             var user = await userManager.FindByIdAsync(id);
             if (user == null)
-                return IdentityResult.Failed();
+                return IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
 
             user.Email = userDto.Email;
             user.Name = userDto.Name;
@@ -115,8 +116,24 @@ namespace Pocom.BLL.Services
             }
             else
             {
-                return IdentityResult.Failed();
-            }
+                return IdentityResult.Failed(new IdentityError { Description = "This email have already been registered.", Code = "RegisteredEmail" });
+            }           
+        }
+
+        public async Task<IdentityResult> LockUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
+            return await userManager.SetLockoutEndDateAsync(user, DateTime.Now.AddYears(1));
+        }
+
+        public async Task<IdentityResult> UnLockUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
+            return await userManager.SetLockoutEndDateAsync(user, DateTime.Now);
         }
     }
 }

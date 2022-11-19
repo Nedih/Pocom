@@ -45,11 +45,16 @@ namespace Pocom.BLL.Services
             return result; 
         }
 
-        public async Task<bool> ValidateUserAsync(LoginViewModel model)
+        public async Task<IdentityResult> ValidateUserAsync(LoginViewModel model)
         {
             _user = await _userManager.FindByNameAsync(model.Email);
-            var result = _user != null && await _userManager.CheckPasswordAsync(_user, model.Password);
-            return result;
+            if (_user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "There is no account with such email", Code = "WrongEmail" });
+            if (!await _userManager.CheckPasswordAsync(_user, model.Password))
+                return IdentityResult.Failed(new IdentityError { Description = "You entered wrong password", Code = "WrongPassword" });
+            if (await _userManager.IsLockedOutAsync(_user))
+                return IdentityResult.Failed(new IdentityError { Description = "Your account is locked", Code = "UserLocked"});
+            return IdentityResult.Success;
         }
 
         public async Task<string> CreateTokenAsync()

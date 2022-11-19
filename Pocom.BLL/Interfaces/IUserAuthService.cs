@@ -12,7 +12,7 @@ namespace Pocom.BLL.Interfaces
     public interface IUserAuthService
     {
         Task<IdentityResult> RegisterUserAsync(RegisterViewModel model);
-        Task<bool> ValidateUserAsync(LoginViewModel model);
+        Task<IdentityResult> ValidateUserAsync(LoginViewModel model);
         Task<string> CreateTokenAsync();
     }
 }

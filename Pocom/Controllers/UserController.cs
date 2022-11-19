@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
 using Pocom.BLL.Models.Identity;
 using Pocom.BLL.Services;
@@ -11,9 +12,9 @@ namespace Pocom.Api.Controllers
     [Route("api/user")]
     public class UserController : Controller
     {
-        UserService _userService;
+        IUserService _userService;
 
-        public UserController(UserService userService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
@@ -48,6 +49,22 @@ namespace Pocom.Api.Controllers
         {
 
             return await _userService.Update(id, user);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("lock")]
+        public async Task<IdentityResult> Lock(string id)
+        {
+
+            return await _userService.LockUser(id);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("unlock")]
+        public async Task<IdentityResult> Unlock(string id)
+        {
+
+            return await _userService.UnLockUser(id);
         }
 
     }

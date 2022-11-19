@@ -48,7 +48,8 @@ namespace Pocom.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Authenticate([FromBody] LoginViewModel user)
         {
-            return !await _userAccountService.ValidateUserAsync(user)
+            var loginResult = await _userAccountService.ValidateUserAsync(user);
+            return !loginResult.Succeeded
                 ? Unauthorized()
                 : Ok(new { Token = await _userAccountService.CreateTokenAsync() });
         }

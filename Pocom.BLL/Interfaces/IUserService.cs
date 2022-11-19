@@ -16,5 +16,7 @@ namespace Pocom.BLL.Interfaces
         Task<UserDTO> GetUser(string email);
         Task<IdentityResult> Update(string id, UserDTO userDto);
         Task<IdentityResult> Create(RegisterViewModel userDto);
+        Task<IdentityResult> LockUser(string id);
+        Task<IdentityResult> UnLockUser(string id);
     }
 }
