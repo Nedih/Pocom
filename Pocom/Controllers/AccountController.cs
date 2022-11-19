@@ -50,7 +50,7 @@ namespace Pocom.Api.Controllers
         {
             var loginResult = await _userAccountService.ValidateUserAsync(user);
             return !loginResult.Succeeded
-                ? Unauthorized()
+                ? Unauthorized(loginResult.Errors)
                 : Ok(new { Token = await _userAccountService.CreateTokenAsync() });
         }
 
