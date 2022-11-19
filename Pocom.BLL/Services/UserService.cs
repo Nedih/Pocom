@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Pocom.BLL.Services
 {
@@ -67,31 +68,31 @@ namespace Pocom.BLL.Services
             };
         }
 
-        public async Task<bool> Update(string id, UserDTO userDto)
+        public async Task<IdentityResult> Update(string id, UserDTO userDto)
         {
             var user = await userManager.FindByIdAsync(id);
             if (user == null)
-                return false;
+                return IdentityResult.Failed();
+
             user.Email = userDto.Email;
             user.Name = userDto.Name;
+            user.UserName = userDto.Email;
+            user.Login = userDto.Login;
+            user.PhoneNumber = userDto.PhoneNumber;
+            user.DateOfBirth = userDto.DateOfBirth;
+ 
             /*var roles = userManager.GetRoles(user.Id);
 
             if (userDto.Role != "" && userDto.Role != null && !roles.Contains(userDto.Role) && roleManager.RoleExists(userDto.Role))
                 await userManager.AddToRoleAsync(user.Id, userDto.Role);*/
 
-            try
-            {
-                await userManager.UpdateAsync(user);
-                await repo.SaveAsync();
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-            return true;
+            IdentityResult result = await userManager.UpdateAsync(user);
+            await repo.SaveAsync();
+
+            return result;
         }
 
-        public async Task<bool> Create(RegisterViewModel userDto)
+        public async Task<IdentityResult> Create(RegisterViewModel userDto)
         {
             UserAccount user = await userManager.FindByEmailAsync(userDto.Email);
             if (user == null)
@@ -106,16 +107,15 @@ namespace Pocom.BLL.Services
                     DateOfBirth = userDto.DateOfBirth
                 };
                 var result = await userManager.CreateAsync(user, userDto.Password);
-                if (result.Errors.Count() > 0)
-                    //return new OperationDetails(false, result.Errors.FirstOrDefault());
-                    return false;
-                await userManager.AddToRoleAsync(user, "User");
-                await repo.SaveAsync();
-                return true;
+                if (result.Errors.Count() == 0) { 
+                    await userManager.AddToRoleAsync(user, "User");
+                    await repo.SaveAsync();
+                }
+                return result;
             }
             else
             {
-                return false;
+                return IdentityResult.Failed();
             }
         }
     }

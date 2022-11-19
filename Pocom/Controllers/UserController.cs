@@ -36,7 +36,7 @@ namespace Pocom.Api.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<bool> Create([FromBody]RegisterViewModel user)
+        public async Task<IdentityResult> Create([FromBody]RegisterViewModel user)
         {
 
             return await _userService.Create(user);
@@ -44,7 +44,7 @@ namespace Pocom.Api.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut]
-        public async Task<bool> Update(string id, [FromBody]UserDTO user)
+        public async Task<IdentityResult> Update(string id, [FromBody]UserDTO user)
         {
 
             return await _userService.Update(id, user);
