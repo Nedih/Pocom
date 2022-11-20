@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
@@ -66,7 +67,7 @@ namespace Pocom.BLL.Services
                     PhoneNumber = user.PhoneNumber
                 };
             }
-            else return new UserDTO();//IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
+            else return null;//IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
         }
 
         public async Task<IdentityResult> Update(string id, UserDTO userDto)

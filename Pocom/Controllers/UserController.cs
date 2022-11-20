@@ -29,10 +29,25 @@ namespace Pocom.Api.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<UserDTO> GetUser(string email)
+        public async Task<IActionResult> GetUser(string email)
         {
+            var user = await _userService.GetUser(email);
+            if (user == null)
+                return NotFound("No such user with this email");
+            return Ok(user);
+        }
 
-            return await _userService.GetUser(email);
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetUserProfile()
+        {
+            string? email = User.Identity.Name;
+            if (string.IsNullOrEmpty(email))
+                return BadRequest("Email is empty");
+            var profile = (ProfileDTO)await _userService.GetUser(email);
+            if (profile == null)
+                return NotFound("No such user with this email");
+            return Ok(profile);
         }
 
         [Authorize(Roles = "Admin")]
