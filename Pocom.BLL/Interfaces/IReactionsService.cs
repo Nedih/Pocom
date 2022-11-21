@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Pocom.BLL.Interfaces
 {
-    internal interface IReactionService
+    public interface IReactionService
     {
         public IEnumerable<Reaction> GetAsync(Func<Reaction, bool> predicate);
         public Reaction FirstOrDefaultAsync(Func<Reaction, bool> predicate);

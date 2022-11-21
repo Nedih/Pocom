@@ -32,7 +32,7 @@ namespace Pocom.BLL.Services
 
         public IEnumerable<Comment> GetAsync(Func<Comment, bool> predicate)
         {
-           return _repository.GetWhere(predicate);
+           return _repository.GetWhere(predicate).ToList();
         }
 
         public Comment FirstOrDefaultAsync(Func<Comment, bool> predicate)

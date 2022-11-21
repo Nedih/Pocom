@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Pocom.BLL.Services
 {
-    internal class ReactionService : IReactionService
+    public class ReactionService : IReactionService
     {
         private readonly IRepository<Reaction> _repository;
 
@@ -36,7 +36,7 @@ namespace Pocom.BLL.Services
 
         public IEnumerable<Reaction> GetAsync(Func<Reaction, bool> predicate)
         {
-            return _repository.GetWhere(predicate);
+            return _repository.GetWhere(predicate).ToList();
         }
 
         public void UpdateAsync(Reaction item)

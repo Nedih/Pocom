@@ -13,6 +13,10 @@ using Pocom.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.AddTransient<IRepository<Post>, Repository<Post>>();
+builder.Services.AddTransient<IPostService, PostService>();
+
 builder.Services.AddDbContext<PocomContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
