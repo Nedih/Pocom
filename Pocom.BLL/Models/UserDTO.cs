@@ -14,5 +14,16 @@ namespace Pocom.BLL.Models
         public string Login { get; set; }
         public string DateOfBirth { get; set; }
         public string PhoneNumber { get; set; }
+
+        public UserDTO() { }
+        public UserDTO(string id, string email, ProfileDTO profile)
+        {
+            Id = id;
+            Email = email;
+            Name = profile.Name;
+            Login = profile.Login;
+            DateOfBirth = profile.DateOfBirth;
+            PhoneNumber = profile.PhoneNumber;
+        }
     }
 }

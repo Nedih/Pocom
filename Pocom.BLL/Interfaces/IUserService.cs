@@ -15,8 +15,9 @@ namespace Pocom.BLL.Interfaces
     {
         IEnumerable<UserDTO> GetUsers();
         Task<UserDTO> GetUser(string email);
-        Task<IdentityResult> Update(string id, UserDTO userDto);
-        Task<IdentityResult> Create(RegisterViewModel userDto);
+        Task<IdentityResult> UpdateUser(string id, UserDTO userDto);
+        Task<IdentityResult> UpdateUser(string email, ProfileDTO userDto);
+        Task<IdentityResult> CreateUser(RegisterViewModel userDto);
         Task<IdentityResult> LockUser(string id);
         Task<IdentityResult> UnLockUser(string id);
     }

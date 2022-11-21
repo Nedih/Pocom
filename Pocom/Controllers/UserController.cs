@@ -50,12 +50,20 @@ namespace Pocom.Api.Controllers
             return Ok(profile);
         }
 
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IdentityResult> UpdateUserProfile([FromBody] ProfileDTO user)
+        {
+            string? email = User.Identity.Name;
+            return await _userService.UpdateUser(email, user);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IdentityResult> Create([FromBody]RegisterViewModel user)
         {
 
-            return await _userService.Create(user);
+            return await _userService.CreateUser(user);
         }
 
         [Authorize(Roles = "Admin")]
@@ -63,7 +71,7 @@ namespace Pocom.Api.Controllers
         public async Task<IdentityResult> Update(string id, [FromBody]UserDTO user)
         {
 
-            return await _userService.Update(id, user);
+            return await _userService.UpdateUser(id, user);
         }
 
         [Authorize(Roles = "Admin")]
