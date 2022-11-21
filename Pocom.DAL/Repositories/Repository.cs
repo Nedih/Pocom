@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Pocom.DAL.Repositories
 {
@@ -52,6 +53,16 @@ namespace Pocom.DAL.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
+            return includeProperties
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+        }
 
+        public IQueryable<TEntity> Sort(IQueryable<TEntity> items, string props)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

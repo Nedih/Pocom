@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Linq.Expressions;
 
-namespace Pocom.Api.Extensions;
+namespace Pocom.BLL.Extensions;
 
 public static class QueryableExtensions
 {
@@ -23,5 +23,10 @@ public static class QueryableExtensions
         var propAsObject = Expression.Convert(property, typeof(object));
 
         return Expression.Lambda<Func<T, object>>(propAsObject, parameter);
+    }
+
+    public static IQueryable<T> Paginate<T>(this IQueryable<T> source,int page, int size)
+    {
+        return source.Skip((page - 1) * size).Take(size);
     }
 }

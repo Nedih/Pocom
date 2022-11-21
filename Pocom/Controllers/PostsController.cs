@@ -2,11 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pocom.BLL.Interfaces;
+using Pocom.BLL.Extensions;
 using Pocom.DAL.Entities;
 using Pocom.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Hosting;
 
 namespace Pocom.Api.Controllers;
 
+[Authorize]
 [Route("api/v1/[controller]")]
 [ApiController]
 public class PostsController : ControllerBase
@@ -32,17 +36,29 @@ public class PostsController : ControllerBase
             items = _service.GetAsync(x => true);
         }
 
-        if (sortBy != null)
-        {
-            var sortByArray = sortBy.Split(',');
-            for (int i = 0; i < sortByArray.Length; i++)
-            {
-                items = i == 0
-                    ? items.OrderBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"))
-                    : items.ThenBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"));
-            }
-        }
+        return _service.Sort(items, sortBy).Paginate(page ,pageSize).ToList();
+    }
 
-        return items.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+    [HttpDelete]
+    public void Delete(Guid id)
+    {
+        var post = _service.FirstOrDefaultAsync(x => x.Id == id);
+        if (post.Author.Email == User.Identity.Name)
+            _service.DeleteAsync(id);
+    }
+
+    [HttpPatch("edittext")]
+    public void EditText([FromForm] Guid id, [FromForm] string text)
+    {
+        var post = _service.FirstOrDefaultAsync(x => x.Id == id);
+        if (post.Author.Email == User.Identity.Name)
+        {
+            post.Text = text;
+            _service.UpdateAsync(post);
+        }
+    }
+    [HttpGet("ownposts")]
+    public IEnumerable<Post> GetOwnPosts() {
+        return _service.GetAsync(x => x.Author?.Email == User.Identity.Name).ToList();
     }
 }
