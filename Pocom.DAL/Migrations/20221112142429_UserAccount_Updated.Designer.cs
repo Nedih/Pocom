@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pocom.DAL;
 
@@ -11,9 +12,10 @@ using Pocom.DAL;
 namespace Pocom.DAL.Migrations
 {
     [DbContext(typeof(PocomContext))]
-    partial class PocomContextModelSnapshot : ModelSnapshot
+    [Migration("20221112142429_UserAccount_Updated")]
+    partial class UserAccount_Updated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,22 +49,6 @@ namespace Pocom.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "f90d3e6a-8656-4835-8bee-089204953802",
-                            ConcurrencyStamp = "679629f7-3cd6-4309-8ad0-c1a5f4576a72",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "64a2c58b-add5-4c03-b286-1a63b65dd65f",
-                            ConcurrencyStamp = "342aedcc-3d7b-40c1-96e2-7867cfbad218",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -210,9 +196,6 @@ namespace Pocom.DAL.Migrations
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<byte[]>("Image")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Text")
                         .IsRequired()
