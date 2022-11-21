@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
 using Pocom.BLL.Models.Identity;
-using Pocom.BLL.Services;
-using Pocom.DAL.Entities;
 
 namespace Pocom.Api.Controllers
 {
@@ -56,6 +54,22 @@ namespace Pocom.Api.Controllers
         {
             string? email = User.Identity.Name;
             return await _userService.UpdateUser(email, user);
+        }
+
+        [Authorize]
+        [HttpPut("email")]
+        public async Task<IdentityResult> UpdateEmail([FromBody] string email)
+        {
+            string? currentEmail = User.Identity.Name;
+            return await _userService.UpdateEmail(currentEmail, email);
+        }
+
+        [Authorize]
+        [HttpPut("password")]
+        public async Task<IdentityResult> UpdatePassword([FromBody] ChangePasswordViewModel model)
+        {
+            string? email = User.Identity.Name;
+            return await _userService.UpdatePassword(email, model);
         }
 
         [Authorize(Roles = "Admin")]

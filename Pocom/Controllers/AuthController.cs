@@ -13,14 +13,10 @@ namespace Pocom.Api.Controllers
     [ApiController]
     public class AuthController : Controller
     {
-        private readonly UserManager<UserAccount> _userManager;
-        private readonly SignInManager<UserAccount> _signInManager;
         private readonly IUserAuthService _userAccountService;
 
-        public AuthController(UserManager<UserAccount> userManager, SignInManager<UserAccount> signInManager, IUserAuthService userAccountService)
+        public AuthController(IUserAuthService userAccountService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
             _userAccountService = userAccountService;
         }
 
