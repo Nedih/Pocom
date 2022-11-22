@@ -12,6 +12,7 @@ using Pocom.DAL.Interfaces;
 using Pocom.DAL.Repositories;
 using AutoMapper;
 using Pocom.BLL.Mapper;
+using Pocom.BLL.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,12 +53,11 @@ builder.Services.AddControllers(config =>
     {
         Duration = 50
     });
-});
+}); 
 
 builder.Services.AddResponseCaching();
 
 builder.Services.AddTransient<IUserAuthService, UserAuthService>();
-
 builder.Services.AddTransient<IRepository<UserAccount>, Repository<UserAccount>>();
 builder.Services.AddTransient<IUserService, UserService>();
 

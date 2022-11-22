@@ -9,16 +9,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Pocom.BLL.Extensions;
 using System.Security.Cryptography.X509Certificates;
+using AutoMapper;
+using Pocom.BLL.Models;
 
 namespace Pocom.BLL.Services
 {
     public class PostService : IPostService
     {
         private readonly IRepository<Post> _repository;
+        private readonly IMapper _mapper;
 
-        public PostService(IRepository<Post> repository)
+        public PostService(IRepository<Post> repository, AutoMapper.IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
         public void CreateAsync(Post item)
         {
@@ -32,25 +36,25 @@ namespace Pocom.BLL.Services
                 _repository.RemoveAndSave(entity);
         }
 
-        public Post? FirstOrDefaultAsync(Func<Post, bool> predicate)
+        public PostDTO? FirstOrDefaultAsync(Func<Post, bool> predicate)
         {
-            return _repository.Include(x => x.Author).FirstOrDefault(predicate);
+            return _mapper.Map<PostDTO>(_repository.Include(x => x.Author).FirstOrDefault(predicate));
         }
 
-        public IQueryable<Post> GetAsync(Func<Post, bool> predicate)
+        public IQueryable<PostDTO> GetAsync(Func<Post, bool> predicate)
         {
-            return _repository.Include(x => x.Author).Where(predicate).AsQueryable<Post>();
+            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(predicate)).AsQueryable<PostDTO>();
         }
 
         public void UpdateAsync(Post item)
         {
             _repository.UpdateAndSave(item);
         }
-        public IQueryable<Post> Sort(IQueryable<Post> items,string props)
+        public IQueryable<PostDTO> Sort(IQueryable<PostDTO> items,string props)
         {
             if (props==null)
             {
-                return items;
+                return _mapper.Map<IEnumerable<PostDTO>>(items).AsQueryable();
             }
             var sortByArray = props.Split(',');
             for (int i = 0; i < sortByArray.Length; i++)
@@ -59,7 +63,7 @@ namespace Pocom.BLL.Services
                     ? items.OrderBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"))
                     : items.ThenBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"));
             }
-            return items;
+            return _mapper.Map<IQueryable<PostDTO>>(items);
         }
 
     }

@@ -41,15 +41,7 @@ namespace Pocom.BLL.Services
             var user = await userManager.FindByEmailAsync(email);
             if (user != null)
             {
-                return new UserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    Login = user.Login,
-                    DateOfBirth = user.DateOfBirth,
-                    PhoneNumber = user.PhoneNumber
-                };
+                return _mapper.Map<UserDTO>(user);
             }
             else return null;
         }
@@ -71,12 +63,6 @@ namespace Pocom.BLL.Services
             if (user == null)
                 return IdentityResult.Failed(new IdentityError { Description = "There is no such user.", Code = "WrongID" });
             user = _mapper.Map<UserAccount>(userDto);
-            //user.Email = userDto.Email;
-            //user.Name = userDto.Name;
-            //user.UserName = userDto.Email;
-            //user.Login = userDto.Login;
-            //user.PhoneNumber = userDto.PhoneNumber;
-            //user.DateOfBirth = userDto.DateOfBirth;
 
             IdentityResult result = await userManager.UpdateAsync(user);
             if (result.Succeeded)
@@ -97,7 +83,7 @@ namespace Pocom.BLL.Services
 
         public async Task<IdentityResult> UpdateEmail(string currentEmail, string newEmail)
         {
-            
+
             var user = await userManager.FindByEmailAsync(currentEmail);
             if (user == null)
                 return IdentityResult.Failed(new IdentityError { Description = "There is no user with this Email.", Code = "WrongEmail" });
@@ -112,17 +98,10 @@ namespace Pocom.BLL.Services
             UserAccount user = await userManager.FindByEmailAsync(userDto.Email);
             if (user == null)
             {
-                user = new UserAccount
-                {
-                    Email = userDto.Email,
-                    UserName = userDto.Email,
-                    Name = userDto.Name,
-                    Login = userDto.Login,
-                    PhoneNumber = userDto.PhoneNumber,
-                    DateOfBirth = userDto.DateOfBirth
-                };
+                user = _mapper.Map<UserAccount>(userDto);
                 var result = await userManager.CreateAsync(user, userDto.Password);
-                if (result.Errors.Count() == 0) { 
+                if (result.Errors.Count() == 0)
+                {
                     await userManager.AddToRoleAsync(user, "User");
                     await repo.SaveAsync();
                 }
@@ -131,7 +110,7 @@ namespace Pocom.BLL.Services
             else
             {
                 return IdentityResult.Failed(new IdentityError { Description = "This email have already been registered.", Code = "RegisteredEmail" });
-            }           
+            }
         }
 
         public async Task<IdentityResult> LockUser(string id)
