@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Pocom.BLL.Interfaces;
@@ -21,32 +22,18 @@ namespace Pocom.BLL.Services
         private readonly UserManager<UserAccount> userManager;
 
         private readonly IRepository<UserAccount> repo;
+        private readonly IMapper _mapper;
 
-        public UserService(IRepository<UserAccount> repo, UserManager<UserAccount> userManager)
+        public UserService(IRepository<UserAccount> repo, UserManager<UserAccount> userManager, AutoMapper.IMapper mapper)
         {
             this.repo = repo;
             this.userManager = userManager;
+            _mapper = mapper;
         }
 
         public IEnumerable<UserDTO> GetUsers()
         {
-            var users = userManager.Users.ToList();
-            var userModels = new List<UserDTO>();
-            foreach (var user in users)
-            {
-                UserDTO userModel = new UserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    Login = user.Login,
-                    DateOfBirth = user.DateOfBirth,
-                    PhoneNumber = user.PhoneNumber
-                };
-
-                userModels.Add(userModel);
-            }
-            return userModels;
+            return _mapper.Map<List<UserDTO>>(userManager.Users.ToList());
         }
 
         public async Task<UserDTO> GetUser(string email)
@@ -83,13 +70,13 @@ namespace Pocom.BLL.Services
         {
             if (user == null)
                 return IdentityResult.Failed(new IdentityError { Description = "There is no such user.", Code = "WrongID" });
-
-            user.Email = userDto.Email;
-            user.Name = userDto.Name;
-            user.UserName = userDto.Email;
-            user.Login = userDto.Login;
-            user.PhoneNumber = userDto.PhoneNumber;
-            user.DateOfBirth = userDto.DateOfBirth;
+            user = _mapper.Map<UserAccount>(userDto);
+            //user.Email = userDto.Email;
+            //user.Name = userDto.Name;
+            //user.UserName = userDto.Email;
+            //user.Login = userDto.Login;
+            //user.PhoneNumber = userDto.PhoneNumber;
+            //user.DateOfBirth = userDto.DateOfBirth;
 
             IdentityResult result = await userManager.UpdateAsync(user);
             if (result.Succeeded)

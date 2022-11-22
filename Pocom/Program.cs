@@ -10,6 +10,8 @@ using Pocom.BLL.Services;
 using Microsoft.AspNetCore.Mvc;
 using Pocom.DAL.Interfaces;
 using Pocom.DAL.Repositories;
+using AutoMapper;
+using Pocom.BLL.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +60,10 @@ builder.Services.AddTransient<IUserAuthService, UserAuthService>();
 
 builder.Services.AddTransient<IRepository<UserAccount>, Repository<UserAccount>>();
 builder.Services.AddTransient<IUserService, UserService>();
+
+var mapperConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
+var mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();

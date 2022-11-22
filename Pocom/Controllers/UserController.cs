@@ -17,11 +17,10 @@ namespace Pocom.Api.Controllers
             _userService = userService;
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet("all")]
         public IEnumerable<UserDTO> Get()
         {
-
             return _userService.GetUsers();
         }
 
