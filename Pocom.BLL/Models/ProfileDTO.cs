@@ -9,7 +9,6 @@ namespace Pocom.BLL.Models
     public class ProfileDTO
     {
         public string Name { get; set; }
-        public string Email { get; set; }
         public string Login { get; set; }
         public string DateOfBirth { get; set; }
         public string PhoneNumber { get; set; }
@@ -19,7 +18,6 @@ namespace Pocom.BLL.Models
             return new ProfileDTO
             {
                 Name = user.Name,
-                Email = user.Email,
                 Login = user.Login,
                 DateOfBirth = user.DateOfBirth,
                 PhoneNumber = user.PhoneNumber

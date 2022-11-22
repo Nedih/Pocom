@@ -43,10 +43,7 @@ namespace Pocom.BLL.Services
                     DateOfBirth = user.DateOfBirth,
                     PhoneNumber = user.PhoneNumber
                 };
-                /*if (await userManager.IsInRoleAsync(user, "User"))
-                    user.Role = "user";
-                if (await userManager.IsInRoleAsync(user, "Admin"))
-                    user.Role = "admin";*/
+
                 userModels.Add(userModel);
             }
             return userModels;
@@ -67,14 +64,25 @@ namespace Pocom.BLL.Services
                     PhoneNumber = user.PhoneNumber
                 };
             }
-            else return null;//IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
+            else return null;
         }
 
-        public async Task<IdentityResult> Update(string id, UserDTO userDto)
+        public async Task<IdentityResult> UpdateUser(string id, UserDTO userDto)
         {
             var user = await userManager.FindByIdAsync(id);
+            return await Update(user, userDto);
+        }
+
+        public async Task<IdentityResult> UpdateUser(string email, ProfileDTO profile)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            return await Update(user, new UserDTO(user.Id, email, profile));
+        }
+
+        public async Task<IdentityResult> Update(UserAccount user, UserDTO userDto)
+        {
             if (user == null)
-                return IdentityResult.Failed(new IdentityError { Description = "There is no user with such ID.", Code = "WrongID" });
+                return IdentityResult.Failed(new IdentityError { Description = "There is no such user.", Code = "WrongID" });
 
             user.Email = userDto.Email;
             user.Name = userDto.Name;
@@ -82,19 +90,37 @@ namespace Pocom.BLL.Services
             user.Login = userDto.Login;
             user.PhoneNumber = userDto.PhoneNumber;
             user.DateOfBirth = userDto.DateOfBirth;
- 
-            /*var roles = userManager.GetRoles(user.Id);
-
-            if (userDto.Role != "" && userDto.Role != null && !roles.Contains(userDto.Role) && roleManager.RoleExists(userDto.Role))
-                await userManager.AddToRoleAsync(user.Id, userDto.Role);*/
 
             IdentityResult result = await userManager.UpdateAsync(user);
-            await repo.SaveAsync();
+            if (result.Succeeded)
+                await repo.SaveAsync();
 
             return result;
         }
 
-        public async Task<IdentityResult> Create(RegisterViewModel userDto)
+        public async Task<IdentityResult> UpdatePassword(string email, ChangePasswordViewModel model)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "There is no user with this Email.", Code = "WrongEmail" });
+            IdentityResult result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+            return result;
+        }
+
+        public async Task<IdentityResult> UpdateEmail(string currentEmail, string newEmail)
+        {
+            
+            var user = await userManager.FindByEmailAsync(currentEmail);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "There is no user with this Email.", Code = "WrongEmail" });
+            var token = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            IdentityResult result = await userManager.ChangeEmailAsync(user, newEmail, token);
+
+            return result;
+        }
+
+        public async Task<IdentityResult> CreateUser(RegisterViewModel userDto)
         {
             UserAccount user = await userManager.FindByEmailAsync(userDto.Email);
             if (user == null)

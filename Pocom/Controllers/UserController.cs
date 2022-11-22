@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
 using Pocom.BLL.Models.Identity;
-using Pocom.BLL.Services;
-using Pocom.DAL.Entities;
 
 namespace Pocom.Api.Controllers
 {
@@ -50,12 +48,36 @@ namespace Pocom.Api.Controllers
             return Ok(profile);
         }
 
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IdentityResult> UpdateUserProfile([FromBody] ProfileDTO user)
+        {
+            string? email = User.Identity.Name;
+            return await _userService.UpdateUser(email, user);
+        }
+
+        [Authorize]
+        [HttpPut("email")]
+        public async Task<IdentityResult> UpdateEmail([FromBody] string email)
+        {
+            string? currentEmail = User.Identity.Name;
+            return await _userService.UpdateEmail(currentEmail, email);
+        }
+
+        [Authorize]
+        [HttpPut("password")]
+        public async Task<IdentityResult> UpdatePassword([FromBody] ChangePasswordViewModel model)
+        {
+            string? email = User.Identity.Name;
+            return await _userService.UpdatePassword(email, model);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IdentityResult> Create([FromBody]RegisterViewModel user)
         {
 
-            return await _userService.Create(user);
+            return await _userService.CreateUser(user);
         }
 
         [Authorize(Roles = "Admin")]
@@ -63,7 +85,7 @@ namespace Pocom.Api.Controllers
         public async Task<IdentityResult> Update(string id, [FromBody]UserDTO user)
         {
 
-            return await _userService.Update(id, user);
+            return await _userService.UpdateUser(id, user);
         }
 
         [Authorize(Roles = "Admin")]
