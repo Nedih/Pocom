@@ -20,7 +20,7 @@ public class PostsController : ControllerBase
     private readonly IPostService _service;
     private readonly IMapper _mapper;
 
-    public PostsController(IPostService service,IMapper mapper)
+    public PostsController(IPostService service, IMapper mapper)
     {
         this._service = service;
         _mapper = mapper;
@@ -62,7 +62,20 @@ public class PostsController : ControllerBase
         }
     }
     [HttpGet("ownposts")]
-    public IEnumerable<PostDTO> GetOwnPosts() {
+    public IEnumerable<PostDTO> GetOwnPosts()
+    {
         return _service.GetAsync(x => x.Author.Email == User.Identity.Name).ToList();
     }
+    [AllowAnonymous]
+    [HttpGet("{id}")]
+    public PostDTO GetPost(Guid id)
+    {
+        return _service.FirstOrDefaultAsync(x => x.Id == id);
+    }
+    [HttpGet("byemail")]
+    public IEnumerable<PostDTO> GetByEmail([FromForm] string email)
+    {
+        return _service.GetAsync(x => x.Author.Email == email).ToList();
+    }
+
 }
