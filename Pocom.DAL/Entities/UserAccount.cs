@@ -11,13 +11,13 @@ namespace Pocom.DAL.Entities
 {
     public class UserAccount : IdentityUser
     {
-        //Guid Id { get; set; }
         public string Name { get; set; }
         public string Login { get; set; }
         public string DateOfBirth { get; set; }
         public string PhoneNumber { get; set; }
-        public List<Post>? Posts { get; set; } 
-        public List<Reaction>? Reactions { get; set; }
-        public List<Comment>? Comments { get; set; }
+        public string? Image { get; set; }
+        public virtual List<UserAccount>? Subscribers { get; set; }
+        public virtual List<Post>? Posts { get; set; } 
+        public virtual List<Reaction>? Reactions { get; set; }
     }
 }

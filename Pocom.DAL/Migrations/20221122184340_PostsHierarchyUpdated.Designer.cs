@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pocom.DAL;
 
@@ -11,9 +12,10 @@ using Pocom.DAL;
 namespace Pocom.DAL.Migrations
 {
     [DbContext(typeof(PocomContext))]
-    partial class PocomContextModelSnapshot : ModelSnapshot
+    [Migration("20221122184340_PostsHierarchyUpdated")]
+    partial class PostsHierarchyUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,15 +53,15 @@ namespace Pocom.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "93f4a14c-d89c-4233-b644-fb92a363cc32",
-                            ConcurrencyStamp = "9a347614-4553-4226-9979-40bae915fce6",
+                            Id = "4dce99cf-9c3a-42da-a179-9ff4de51e617",
+                            ConcurrencyStamp = "dad1ca34-dae3-4c67-92a7-2c9759bfe199",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "1d9148eb-43df-4ae0-901f-5e75ce63ee41",
-                            ConcurrencyStamp = "0b59dd38-d67d-4666-a80b-213ab1562e50",
+                            Id = "f8817ef7-cd14-4a6c-9457-51a8e6da483f",
+                            ConcurrencyStamp = "15bc855e-2a00-4f18-a01e-b040d3a098eb",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -171,6 +173,34 @@ namespace Pocom.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Pocom.DAL.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("Pocom.DAL.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -246,8 +276,8 @@ namespace Pocom.DAL.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -358,6 +388,21 @@ namespace Pocom.DAL.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Pocom.DAL.Entities.Comment", b =>
+                {
+                    b.HasOne("Pocom.DAL.Entities.UserAccount", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("Pocom.DAL.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Pocom.DAL.Entities.Post", b =>

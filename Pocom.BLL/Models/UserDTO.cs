@@ -12,6 +12,7 @@ namespace Pocom.BLL.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public string Login { get; set; }
+        public string Image { get; set; }
         public string DateOfBirth { get; set; }
         public string PhoneNumber { get; set; }
 
@@ -22,6 +23,7 @@ namespace Pocom.BLL.Models
             Email = email;
             Name = profile.Name;
             Login = profile.Login;
+            Image = profile.Image;
             DateOfBirth = profile.DateOfBirth;
             PhoneNumber = profile.PhoneNumber;
         }

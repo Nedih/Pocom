@@ -62,7 +62,8 @@ namespace Pocom.BLL.Services
         {
             if (user == null)
                 return IdentityResult.Failed(new IdentityError { Description = "There is no such user.", Code = "WrongID" });
-            user = _mapper.Map<UserAccount>(userDto);
+
+            /*user = */_mapper.Map(userDto, user);
 
             IdentityResult result = await userManager.UpdateAsync(user);
             if (result.Succeeded)

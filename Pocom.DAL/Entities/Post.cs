@@ -14,7 +14,8 @@ namespace Pocom.DAL.Entities
         public DateTime CreationDate { get; set; }
         public byte[]? Image { get; set; } 
         public UserAccount Author { get; set; }
+        public Post? ParentPost { get; set; }
         public IList<Reaction>? Reactions { get; set; } = new List<Reaction>();
-        public IList<Comment>? Comments { get; set; } = new List<Comment>();
+        public IList<Post>? Comments { get; set; } = new List<Post>();
     }
 }

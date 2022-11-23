@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pocom.DAL;
 
@@ -11,9 +12,10 @@ using Pocom.DAL;
 namespace Pocom.DAL.Migrations
 {
     [DbContext(typeof(PocomContext))]
-    partial class PocomContextModelSnapshot : ModelSnapshot
+    [Migration("20221122170847_UserEntity_ImageAndSubscribers_Added")]
+    partial class UserEntity_ImageAndSubscribers_Added
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,15 +53,15 @@ namespace Pocom.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "93f4a14c-d89c-4233-b644-fb92a363cc32",
-                            ConcurrencyStamp = "9a347614-4553-4226-9979-40bae915fce6",
+                            Id = "ae8d8a33-c0d8-47e9-9ac6-f52092165451",
+                            ConcurrencyStamp = "0055e714-746a-4683-b174-610868b63254",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "1d9148eb-43df-4ae0-901f-5e75ce63ee41",
-                            ConcurrencyStamp = "0b59dd38-d67d-4666-a80b-213ab1562e50",
+                            Id = "bc6769f6-a965-4a35-b583-0f74ecc8fa09",
+                            ConcurrencyStamp = "5ef2aa1a-642f-4acd-93f5-86f14ab544d1",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -171,6 +173,34 @@ namespace Pocom.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Pocom.DAL.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("Pocom.DAL.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -186,9 +216,6 @@ namespace Pocom.DAL.Migrations
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<Guid?>("ParentPostId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -196,8 +223,6 @@ namespace Pocom.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("ParentPostId");
 
                     b.ToTable("Posts");
                 });
@@ -246,8 +271,8 @@ namespace Pocom.DAL.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -360,19 +385,28 @@ namespace Pocom.DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pocom.DAL.Entities.Comment", b =>
+                {
+                    b.HasOne("Pocom.DAL.Entities.UserAccount", "Author")
+                        .WithMany("Comments")
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("Pocom.DAL.Entities.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("Pocom.DAL.Entities.Post", b =>
                 {
                     b.HasOne("Pocom.DAL.Entities.UserAccount", "Author")
                         .WithMany("Posts")
                         .HasForeignKey("AuthorId");
 
-                    b.HasOne("Pocom.DAL.Entities.Post", "ParentPost")
-                        .WithMany("Comments")
-                        .HasForeignKey("ParentPostId");
-
                     b.Navigation("Author");
-
-                    b.Navigation("ParentPost");
                 });
 
             modelBuilder.Entity("Pocom.DAL.Entities.Reaction", b =>
@@ -408,6 +442,8 @@ namespace Pocom.DAL.Migrations
 
             modelBuilder.Entity("Pocom.DAL.Entities.UserAccount", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Posts");
 
                     b.Navigation("Reactions");

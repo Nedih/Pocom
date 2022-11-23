@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pocom.DAL;
 
@@ -11,9 +12,10 @@ using Pocom.DAL;
 namespace Pocom.DAL.Migrations
 {
     [DbContext(typeof(PocomContext))]
-    partial class PocomContextModelSnapshot : ModelSnapshot
+    [Migration("20221122184542_CommentEntityDeleted")]
+    partial class CommentEntityDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,15 +53,15 @@ namespace Pocom.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "93f4a14c-d89c-4233-b644-fb92a363cc32",
-                            ConcurrencyStamp = "9a347614-4553-4226-9979-40bae915fce6",
+                            Id = "22486ea0-1c61-4210-a2e6-46fd4d6858b4",
+                            ConcurrencyStamp = "823e13e9-075d-4710-b775-84d77885abfa",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "1d9148eb-43df-4ae0-901f-5e75ce63ee41",
-                            ConcurrencyStamp = "0b59dd38-d67d-4666-a80b-213ab1562e50",
+                            Id = "c9b74194-d63b-4e1d-afe8-40543e1d185d",
+                            ConcurrencyStamp = "2ae0bb8a-e16b-4478-91cd-681d2acbf56a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -246,8 +248,8 @@ namespace Pocom.DAL.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

@@ -15,6 +15,6 @@ namespace Pocom.BLL.Models
         public byte[]? Image { get; set; }
         public string Author { get; set; }
         public IList<Reaction>? Reactions { get; set; } = new List<Reaction>();
-        public IList<Comment>? Comments { get; set; } = new List<Comment>();
+        public IList<Post>? Comments { get; set; } = new List<Post>();
     }
 }
