@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models.Identity;
 using Pocom.DAL.Entities;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Pocom.Api.Controllers
 {
@@ -47,8 +48,17 @@ namespace Pocom.Api.Controllers
             var loginResult = await _userAccountService.ValidateUserAsync(user);
             return !loginResult.Succeeded
                 ? Unauthorized(loginResult.Errors)
-                : Ok(new { Token = await _userAccountService.CreateTokenAsync() });
+                : Ok(await _userAccountService.CreateTokensAsync(user));
         }
 
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
+        {
+            var result = await _userAccountService.RefreshTokensAsync(tokenModel);
+            if(!string.IsNullOrEmpty(result.Exception))
+                return BadRequest(result.Exception);
+            return Ok(result);
+        }
     }
 }

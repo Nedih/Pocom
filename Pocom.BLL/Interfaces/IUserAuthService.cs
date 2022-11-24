@@ -14,5 +14,7 @@ namespace Pocom.BLL.Interfaces
         Task<IdentityResult> RegisterUserAsync(RegisterViewModel model);
         Task<IdentityResult> ValidateUserAsync(LoginViewModel model);
         Task<string> CreateTokenAsync();
+        Task<TokenModel> CreateTokensAsync(LoginViewModel model);
+        Task<TokenModel> RefreshTokensAsync(TokenModel tokenModel);
     }
 }
