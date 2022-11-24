@@ -43,6 +43,10 @@ namespace Pocom.BLL.Services
                 DateOfBirth = model.DateOfBirth
             };
             var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Errors.Count() == 0)
+            {
+                await _userManager.AddToRoleAsync(user, "User");
+            }
             return result; 
         }
 
@@ -197,7 +201,8 @@ namespace Pocom.BLL.Services
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if (securityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
             
             return principal;
