@@ -11,6 +11,7 @@ using Pocom.BLL.Extensions;
 using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using Pocom.BLL.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Pocom.BLL.Services
 {
@@ -18,15 +19,27 @@ namespace Pocom.BLL.Services
     {
         private readonly IRepository<Post> _repository;
         private readonly IMapper _mapper;
+        private readonly UserManager<UserAccount> _userManager;
 
-        public PostService(IRepository<Post> repository, AutoMapper.IMapper mapper)
+        public PostService(IRepository<Post> repository, AutoMapper.IMapper mapper, UserManager<UserAccount> userManager)
         {
             _repository = repository;
             _mapper = mapper;
+            _userManager = userManager;
         }
-        public void CreateAsync(Post item)
+        public async Task<IdentityResult> CreateAsync(string email, PostDTO item)
         {
-            _repository.AddAndSave(item);
+            var author = await _userManager.FindByEmailAsync(email);
+            //var post = _mapper.Map<Post>(item);
+            try
+            {
+                _repository.AddAndSave(new Post { Text = item.Text, Author = author, CreationDate = item.CreationDate });
+            }
+            catch (Exception ex) {
+                return IdentityResult.Failed(new IdentityError { Code = ex.TargetSite.Name, Description = ex.Message});
+            }
+            //await _repository.SaveAsync();
+            return IdentityResult.Success;
         }
 
         public void DeleteAsync(Guid id)

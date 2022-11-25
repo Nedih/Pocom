@@ -9,7 +9,7 @@ namespace Pocom.DAL.Entities
 {
     public class Post
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Text { get; set; }
         public DateTime CreationDate { get; set; }
         public string? Image { get; set; } 

@@ -1,4 +1,5 @@
-﻿using Pocom.BLL.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Pocom.BLL.Models;
 using Pocom.DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Pocom.BLL.Interfaces
     {
         public IQueryable<PostDTO> GetAsync(Func<Post, bool> predicate);
         public PostDTO FirstOrDefaultAsync(Func<Post, bool> predicate);
-        public void CreateAsync(Post item);
+        public Task<IdentityResult> CreateAsync(string email, PostDTO post);
         public void UpdateAsync(Post item);
         public void DeleteAsync(Guid id);
         public IQueryable<PostDTO> Sort(IQueryable<PostDTO> items, string props);

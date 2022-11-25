@@ -51,15 +51,15 @@ namespace Pocom.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "146db4c2-91f4-4aa6-9816-dde47bc9d55e",
-                            ConcurrencyStamp = "07cd459a-eccb-47f4-86af-77d36c1dd4a5",
+                            Id = "dcebbc70-bf6f-4682-9dfe-e7977f16391e",
+                            ConcurrencyStamp = "2fd51e99-f636-4427-bb61-c673af2a239e",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "00fcf398-9ba8-4937-860b-15b9e4f4bf30",
-                            ConcurrencyStamp = "4d40bd29-55be-4988-a482-4c1c483bd1ae",
+                            Id = "de2c9d3c-b296-4173-a7d6-b01e8ed578ec",
+                            ConcurrencyStamp = "fa394505-9f5c-4b0c-a493-fd5e51f22e77",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });

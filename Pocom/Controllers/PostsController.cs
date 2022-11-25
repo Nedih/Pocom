@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Hosting;
 using Pocom.BLL.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 
 namespace Pocom.Api.Controllers;
 
@@ -78,4 +79,9 @@ public class PostsController : ControllerBase
         return _service.GetAsync(x => x.Author.Email == email).ToList();
     }
 
+    [HttpPost]
+    public Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
+    {
+        return _service.CreateAsync(User?.Identity?.Name, postModel);
+    }
 }

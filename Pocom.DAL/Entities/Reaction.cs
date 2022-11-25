@@ -9,7 +9,7 @@ namespace Pocom.DAL.Entities
 {
     public class Reaction
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public UserAccount Author { get; set; }
         public Post Post { get; set; }
     }
