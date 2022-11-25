@@ -38,7 +38,11 @@ namespace Pocom.BLL.Services
 
         public IEnumerable<ProfileDTO> GetUsersList()
         {
-            return _mapper.Map<List<ProfileDTO>>(userManager.Users.ToList());
+            var userModels = _mapper.Map<List<UserDTO>>(userManager.Users.ToList());
+            var profileModels = new List<ProfileDTO>();
+            foreach (var user in userModels)
+                profileModels.Add((ProfileDTO)user);
+            return profileModels;
         }
 
         public async Task<UserDTO> GetUser(string email)

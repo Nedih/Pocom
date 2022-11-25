@@ -59,8 +59,11 @@ builder.Services.AddResponseCaching();
 
 builder.Services.AddTransient<IUserAuthService, UserAuthService>();
 builder.Services.AddTransient<IRepository<UserAccount>, Repository<UserAccount>>();
+builder.Services.AddTransient<IRepository<Reaction>, Repository<Reaction>>();
+builder.Services.AddTransient<IRepository<Post>, Repository<Post>>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IPostService, PostService>();
+builder.Services.AddTransient<IReactionService, ReactionService>();
 
 var mapperConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
 var mapper = mapperConfig.CreateMapper();

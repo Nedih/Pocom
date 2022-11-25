@@ -27,6 +27,7 @@ public class PostsController : ControllerBase
         _mapper = mapper;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public IEnumerable<PostDTO> Index(int page = 1, string? sortBy = null, string? text = null)
     {
