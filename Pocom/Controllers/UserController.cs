@@ -103,5 +103,11 @@ namespace Pocom.Api.Controllers
             return await _userService.UnLockUser(id);
         }
 
+        [Authorize]
+        [HttpGet("users-list")]
+        public IEnumerable<ProfileDTO> GetList()
+        {
+            return _userService.GetUsersList();
+        }
     }
 }
