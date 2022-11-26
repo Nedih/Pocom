@@ -13,7 +13,7 @@ namespace Pocom.BLL.Interfaces
         public IEnumerable<Reaction> GetAsync(Func<Reaction, bool> predicate);
         public Task<IEnumerable<ReactionDTO>> GetUserReactionsAsync(string email);
         public Reaction FirstOrDefaultAsync(Func<Reaction, bool> predicate);
-        public void CreateAsync(Reaction item);
+        public Task<bool> CreateAsync(string email, ReactionDTO item);
         public void UpdateAsync(Reaction item);
         public void DeleteAsync(string id);
     }

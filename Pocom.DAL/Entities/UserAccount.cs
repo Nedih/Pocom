@@ -14,7 +14,7 @@ namespace Pocom.DAL.Entities
         public string Name { get; set; }
         public string Login { get; set; }
         public string DateOfBirth { get; set; }
-        public string PhoneNumber { get; set; }
+        //public string PhoneNumber { get; set; }
         public string? Image { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }

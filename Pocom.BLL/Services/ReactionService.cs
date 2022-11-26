@@ -25,9 +25,18 @@ namespace Pocom.BLL.Services
             _userManager = userManager;
             _mapper = mapper;
         }
-        public void CreateAsync(Reaction item)
+        public async Task<bool> CreateAsync(string email, ReactionDTO item)
         {
-            _repository.AddAndSave(item);
+            var user = await _userManager.FindByEmailAsync(email);
+            Reaction t = _repository.FirstOrDefault(x => x.AuthorId == user.Id && x.PostId == item.PostId);
+            if (t == null) 
+            {
+                //_repository.AddAndSave(_mapper.Map<Reaction>(item));
+                var r = new Reaction { Author = user, PostId = item.PostId, Type = item.Type };
+                _repository.AddAndSave(r);
+                return true;
+            }
+            return false;
         }
 
         public void DeleteAsync(string id)

@@ -39,4 +39,14 @@ public class ReactionsController : ControllerBase
             return NotFound("No such user with this email");
         return Ok(profile);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> PostReaction(ReactionDTO reaction)
+    {
+        string? email = User.Identity.Name;
+        if (string.IsNullOrEmpty(email))
+            return BadRequest("Email is empty");
+        //await _service.CreateAsync(email, reaction);
+        return Ok(await _service.CreateAsync(email, reaction));
+    }
 }
