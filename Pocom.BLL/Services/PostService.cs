@@ -1,17 +1,11 @@
 ﻿using Pocom.BLL.Interfaces;
 using Pocom.DAL.Entities;
 using Pocom.DAL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Pocom.BLL.Extensions;
-using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using Pocom.BLL.Models;
 using Microsoft.AspNetCore.Identity;
+using Pocom.BLL.Models.ViewModels;
 
 namespace Pocom.BLL.Services
 {
@@ -35,8 +29,9 @@ namespace Pocom.BLL.Services
             {
                 _repository.AddAndSave(new Post { Text = item.Text, Author = author, CreationDate = item.CreationDate });
             }
-            catch (Exception ex) {
-                return IdentityResult.Failed(new IdentityError { Code = ex.TargetSite.Name, Description = ex.Message});
+            catch (Exception ex)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = ex.TargetSite.Name, Description = ex.Message });
             }
             //await _repository.SaveAsync();
             return IdentityResult.Success;
@@ -54,18 +49,56 @@ namespace Pocom.BLL.Services
             return _mapper.Map<PostDTO>(_repository.Include(x => x.Author).FirstOrDefault(predicate));
         }
 
-        public IQueryable<PostDTO> GetAsync(Func<Post, bool> predicate)
+        public IEnumerable<PostDTO> GetAsync(Func<Post, bool> predicate)
         {
-            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(predicate)).AsQueryable<PostDTO>();
+            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(predicate));
+        }
+        public IEnumerable<PostDTO> GetAsync(RequestViewModel vm)
+        {
+            const int pageSize = 5;
+            IQueryable<Post> items = _repository.Include(x => x.Author);
+            if (vm.Text != null)
+            {
+                items = _repository.Include(x => x.Author)
+                    .Where(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
+            }
+
+            if (vm.Email != null)
+            {
+                items = _repository.Include(x => x.Author)
+                    .Where(x => x.Author.Email==vm.Email);
+            }
+
+            if (vm.SortBy == null)
+            {
+                return _mapper.Map<IEnumerable<PostDTO>>(items);
+            }
+            var sortByArray = vm.SortBy.Split(',');
+            for (int i = 0; i < sortByArray.Length; i++)
+            {
+                items = i == 0
+                    ? items.OrderBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"))
+                    : items.ThenBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"));
+            }
+            return _mapper.Map<IEnumerable<PostDTO>>(items.Paginate(vm.Page,pageSize));
         }
 
-        public void UpdateAsync(Post item)
+        public void UpdateAsync(PostDTO item)
         {
-            _repository.UpdateAndSave(item);
+            _repository.UpdateAndSave(_mapper.Map<Post>(item));
         }
-        public IQueryable<PostDTO> Sort(IQueryable<PostDTO> items,string props)
+        public void UpdateTextAsync(Guid id,Guid authorId, string text)
         {
-            if (props==null)
+            var post = _repository.FirstOrDefault(x => x.Id == id && x.Author.Id == authorId.ToString());
+            if (post != null)
+            {
+                post.Text = text;
+                _repository.UpdateAndSave(post);
+            }
+        }
+        public  IEnumerable<PostDTO> Sort(IQueryable<PostDTO> items, string props)
+        {
+            if (props == null)
             {
                 return _mapper.Map<IEnumerable<PostDTO>>(items).AsQueryable();
             }
@@ -76,7 +109,7 @@ namespace Pocom.BLL.Services
                     ? items.OrderBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"))
                     : items.ThenBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"));
             }
-            return _mapper.Map<IQueryable<PostDTO>>(items);
+            return items;
         }
 
     }

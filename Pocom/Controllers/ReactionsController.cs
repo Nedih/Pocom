@@ -20,12 +20,10 @@ namespace Pocom.Api.Controllers;
 public class ReactionsController : ControllerBase
 {
     private readonly IReactionService _service;
-    private readonly IMapper _mapper;
 
     public ReactionsController(IReactionService service, IMapper mapper)
     {
         this._service = service;
-        _mapper = mapper;
     }
 
     [HttpGet]

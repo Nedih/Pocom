@@ -1,13 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Hosting.Server;
 using Pocom.BLL.Models;
 using Pocom.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pocom.BLL.Mapper
 {

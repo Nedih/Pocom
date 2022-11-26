@@ -52,7 +52,7 @@ namespace Pocom.BLL.Services
             {
                 return _mapper.Map<UserDTO>(user);
             }
-            else return null;
+            else return new UserDTO();
         }
 
         public async Task<IdentityResult> UpdateUser(string id, UserDTO userDto)

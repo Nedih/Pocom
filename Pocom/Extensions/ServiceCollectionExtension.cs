@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Pocom.BLL.Interfaces;
+using Pocom.BLL.Services;
+using Pocom.DAL.Entities;
+using Pocom.DAL.Interfaces;
+using Pocom.DAL.Repositories;
 using System.Text;
 
 namespace Pocom.Api.Extensions
@@ -71,6 +76,18 @@ namespace Pocom.Api.Extensions
                 }
             });
             });
+        }
+        public static void AddApplication(this IServiceCollection services)
+        {
+            services.AddTransient<IUserAuthService, UserAuthService>();
+            services.AddTransient<IRepository<Post>, Repository<Post>>();
+            services.AddTransient<IRepository<UserAccount>, Repository<UserAccount>>();
+            services.AddTransient<IRepository<Reaction>, Repository<Reaction>>();
+            services.AddTransient<IRepository<Post>, Repository<Post>>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IPostService, PostService>();
+            services.AddTransient<IReactionService, ReactionService>();
+            services.AddTransient<IPostService, PostService>();
         }
     }
 }

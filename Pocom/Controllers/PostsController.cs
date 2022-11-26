@@ -1,14 +1,8 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Pocom.BLL.Interfaces;
-using Pocom.BLL.Extensions;
-using Pocom.DAL.Entities;
-using Pocom.Api.Extensions;
+using Pocom.BLL.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Hosting;
 using Pocom.BLL.Models;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
 namespace Pocom.Api.Controllers;
@@ -19,30 +13,17 @@ namespace Pocom.Api.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly IPostService _service;
-    private readonly IMapper _mapper;
 
-    public PostsController(IPostService service, IMapper mapper)
+    public PostsController(IPostService service)
     {
-        this._service = service;
-        _mapper = mapper;
+        _service = service;
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public IEnumerable<PostDTO> Index(int page = 1, string? sortBy = null, string? text = null)
+    public IEnumerable<PostDTO> Index([FromBody] RequestViewModel vm)
     {
-        const int pageSize = 5;
-        IQueryable<PostDTO> items;
-        if (text != null)
-        {
-            items = _service.GetAsync(x => x.Text.ToLower().Contains(text.ToLower()));
-        }
-        else
-        {
-            items = _service.GetAsync(x => true);
-        }
-
-        return _service.Sort(items, sortBy)/*.Paginate(page ,pageSize)*/.ToList();
+        return _service.GetAsync(vm);
     }
 
     [HttpDelete]
@@ -54,14 +35,9 @@ public class PostsController : ControllerBase
     }
 
     [HttpPatch("edittext")]
-    public void EditText([FromForm] Guid id, [FromForm] string text)
+    public void EditText([FromForm] Guid postId, [FromForm] Guid authorId, [FromForm] string text)
     {
-        var post = _service.FirstOrDefaultAsync(x => x.Id == id);
-        if (post.Author == User.Identity.Name)
-        {
-            post.Text = text;
-            _service.UpdateAsync(_mapper.Map<Post>(post));
-        }
+        _service.UpdateTextAsync(postId, authorId, text);
     }
     [HttpGet("ownposts")]
     public IEnumerable<PostDTO> GetOwnPosts()
@@ -75,7 +51,7 @@ public class PostsController : ControllerBase
         return _service.FirstOrDefaultAsync(x => x.Id == id);
     }
     [HttpGet("byemail")]
-    public IEnumerable<PostDTO> GetByEmail([FromForm] string email)
+    public IEnumerable<PostDTO> GetByEmail([FromBody] string email)
     {
         return _service.GetAsync(x => x.Author.Email == email).ToList();
     }
