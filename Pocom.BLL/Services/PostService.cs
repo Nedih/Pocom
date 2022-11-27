@@ -6,6 +6,7 @@ using AutoMapper;
 using Pocom.BLL.Models;
 using Microsoft.AspNetCore.Identity;
 using Pocom.BLL.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Pocom.BLL.Services
 {
@@ -27,7 +28,7 @@ namespace Pocom.BLL.Services
             //var post = _mapper.Map<Post>(item);
             try
             {
-                _repository.AddAndSave(new Post { Text = item.Text, Author = author, CreationDate = item.CreationDate });
+                _repository.AddAndSave(new Post { Text = item.Text, Author = author, CreationDate = item.CreationDate,ParentPostId = item.ParentPostId });
             }
             catch (Exception ex)
             {
@@ -59,14 +60,14 @@ namespace Pocom.BLL.Services
             IQueryable<Post> items = _repository.Include(x => x.Author);
             if (vm.Text != null)
             {
-                items = _repository.Include(x => x.Author)
-                    .Where(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
+                items = _repository
+                    .GetWhere(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
             }
 
             if (vm.Email != null)
             {
-                items = _repository.Include(x => x.Author)
-                    .Where(x => x.Author.Email==vm.Email);
+                items = _repository
+                    .GetWhere(x => x.Author.Email==vm.Email);
             }
 
             if (vm.SortBy == null)

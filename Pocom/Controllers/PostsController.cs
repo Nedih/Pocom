@@ -20,10 +20,16 @@ public class PostsController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet]
+    [HttpPost("query")]
     public IEnumerable<PostDTO> Index([FromBody] RequestViewModel vm)
     {
         return _service.GetAsync(vm);
+    }
+    [AllowAnonymous]
+    [HttpGet]
+    public IEnumerable<PostDTO> Index()
+    {
+        return _service.GetAsync(new RequestViewModel());
     }
 
     [HttpDelete]
@@ -50,6 +56,12 @@ public class PostsController : ControllerBase
     {
         return _service.FirstOrDefaultAsync(x => x.Id == id);
     }
+    [AllowAnonymous]
+    [HttpGet("comments/{id}")]
+    public IEnumerable<PostDTO> GetComments(Guid id)
+    {
+        return _service.GetAsync(x => x.ParentPostId == id);
+    }
     [HttpGet("byemail")]
     public IEnumerable<PostDTO> GetByEmail([FromBody] string email)
     {
@@ -61,4 +73,5 @@ public class PostsController : ControllerBase
     {
         return _service.CreateAsync(User?.Identity?.Name, postModel);
     }
+
 }
