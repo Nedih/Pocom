@@ -55,9 +55,9 @@ namespace Pocom.BLL.Services
         {
             return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(x => x.ParentPostId == id));
         }
-        public async Task<IEnumerable<PostDTO>> GetAllAsync(string email = null)
+        public async Task<IEnumerable<PostDTO>> GetAllAsync(string? email = null)
         {
-            var posts = _mapper.Map<IEnumerable<PostDTO>>(_repository.GetAll().Include(x => x.Author));
+            var posts = _mapper.Map<IEnumerable<PostDTO>>(_repository.GetAll().Include(x => x.Author).Include(x=>x.Reactions));
             if (!string.IsNullOrEmpty(email))
             {
                 /* var userReactedPosts = await GetUserReactionsPostsAsync(email);
@@ -143,7 +143,7 @@ namespace Pocom.BLL.Services
             var responsePosts = new List<PostDTO>();
             foreach (var reaction in reactions)
             {
-               var post = _repository.Include(x => x.Author).FirstOrDefault(x => x.Id == reaction.PostId);
+               var post = _repository.Include(x => x.Author).Include(x => x.Reactions).FirstOrDefault(x => x.Id == reaction.PostId);
                if (post != null) 
                {
                     var model = _mapper.Map<PostDTO>(post);
