@@ -42,16 +42,6 @@ namespace Pocom.BLL.Services
                 _repository.Remove(entity);
         }
 
-        public Reaction FirstOrDefault(Func<Reaction, bool> predicate)
-        {
-            return _repository.FirstOrDefault(predicate);
-        }
-
-        public IEnumerable<Reaction> Get(Func<Reaction, bool> predicate)
-        {
-            return _repository.GetWhere(predicate).ToList();
-        }
-
         public IEnumerable<ReactionDTO> GetUserReactions(string email)
         {
             var reactions = _userManager.Users.Where(x => x.Email == email).Select(x => x.Reactions ).FirstOrDefault();
@@ -62,7 +52,7 @@ namespace Pocom.BLL.Services
         {
             var reaction = _repository.FirstOrDefault(x => x.AuthorId == model.AuthorId.ToString() && x.PostId == model.PostId);
             reaction.Type = model.ReactionType;
-            _repository.UpdateAndSave(reaction);
+            _repository.Update(reaction);
         }
 
         public Dictionary<ReactionType, int> GetPostReactions(Guid postId)
@@ -70,9 +60,14 @@ namespace Pocom.BLL.Services
             var result = new Dictionary<ReactionType, int>();
             foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
             {
-                result.Add(reaction, _repository.Count(x => x.Type == reaction));
+                result.Add(reaction, _repository.Count(x => x.Type == reaction && x.PostId == postId));
             }
             return result;
+        }
+
+        public ReactionType? GetUserPostReaction(string userId, Guid postId)
+        {
+            return _repository.FirstOrDefault(x => x.AuthorId == userId && x.PostId == postId)?.Type;
         }
     }
 }
