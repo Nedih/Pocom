@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
 using Pocom.DAL.Entities;
@@ -29,7 +28,7 @@ namespace Pocom.BLL.Services
             {
                 //_repository.AddAndSave(_mapper.Map<Reaction>(item));
                 var r = new Reaction { Author = user, PostId = item.PostId, Type = item.Type };
-                _repository.AddAndSave(r);
+                _repository.Add(r);
                 return true;
             }
             return false;
@@ -39,17 +38,17 @@ namespace Pocom.BLL.Services
         {
             var entity = _repository.FirstOrDefault(x => x.Id.ToString() == id);
             if (entity != null)
-                _repository.RemoveAndSave(entity);
+                _repository.Remove(entity);
         }
 
-        public ReactionDTO FirstOrDefault(Func<Reaction, bool> predicate)
+        public Reaction FirstOrDefault(Func<Reaction, bool> predicate)
         {
-            return _mapper.Map< ReactionDTO>(_repository.FirstOrDefault(predicate));
+            return _repository.FirstOrDefault(predicate);
         }
 
-        public IEnumerable<ReactionDTO> Get(Func<Reaction, bool> predicate)
+        public IEnumerable<Reaction> Get(Func<Reaction, bool> predicate)
         {
-            return _mapper.Map<IEnumerable<ReactionDTO>>(_repository.GetWhere(predicate).ToList());
+            return _repository.GetWhere(predicate).ToList();
         }
 
         public IEnumerable<ReactionDTO> GetUserReactions(string email)
@@ -60,17 +59,15 @@ namespace Pocom.BLL.Services
 
         public void Update(Reaction item)
         {
-            _repository.UpdateAndSave(item);
+            _repository.Update(item);
         }
 
-        public  Dictionary<ReactionType, int> GetPostReactions(Guid postId)
+        public Dictionary<ReactionType, int> GetPostReactions(Guid postId)
         {
             var result = new Dictionary<ReactionType, int>();
             foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
             {
-                int number = _repository.GetWhere(x => x.Type == reaction && x.PostId == postId).Count();
-                result.Add(reaction, number);
-                    //_repository./*GetWhere(x => x.Type == reaction && x.PostId == postId).*/Count(x => x.Type == reaction && x.PostId == postId));
+                result.Add(reaction, _repository.Count(x => x.Type == reaction));
             }
             return result;
         }

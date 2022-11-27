@@ -7,15 +7,14 @@ namespace Pocom.BLL.Interfaces
 {
     public interface IPostService
     {
-        public IEnumerable<PostDTO> Get(Func<Post, bool> predicate);
-        public Task<IEnumerable<PostDTO>> GetAll(string email);
+        public Task<IEnumerable<PostDTO>> GetAllAsync(string email);
         public IEnumerable<PostDTO> Get(RequestViewModel vm);
-        public PostDTO? GetPost(Guid id);
-        public Task<IdentityResult> Create(string email, PostDTO post);
+        public Task<PostDTO?> GetPostAsync(Guid id);
+        public IEnumerable<PostDTO> GetComments(Guid id);
+        public Task<IdentityResult> CreateAsync(string email, PostDTO post);
         public void Update(PostDTO item);
         public void UpdateText(Guid id, Guid authorId, string text);
         public void Delete(Guid id);
-        public IEnumerable<PostDTO> Sort(IQueryable<PostDTO> items, string props);
-        Task<IEnumerable<PostDTO>> GetUserReactionsPosts(string email);
+        public Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync(string email);
     }
 }
