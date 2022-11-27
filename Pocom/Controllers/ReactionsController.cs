@@ -21,7 +21,7 @@ public class ReactionsController : ControllerBase
 {
     private readonly IReactionService _service;
 
-    public ReactionsController(IReactionService service, IMapper mapper)
+    public ReactionsController(IReactionService service)
     {
         this._service = service;
     }
@@ -29,10 +29,10 @@ public class ReactionsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUserReactions()
     {
-        string? email = User.Identity.Name;
+        string? email = User.Identity?.Name;
         if (string.IsNullOrEmpty(email))
             return BadRequest("Email is empty");
-        var profile = _service.GetUserReactionsAsync(email);
+        var profile = _service.GetUserReactions(email);
         if (profile == null)
             return NotFound("No such user with this email");
         return Ok(profile);
@@ -41,7 +41,7 @@ public class ReactionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostReaction(ReactionDTO reaction)
     {
-        string? email = User.Identity.Name;
+        string? email = User.Identity?.Name;
         if (string.IsNullOrEmpty(email))
             return BadRequest("Email is empty");
         //await _service.CreateAsync(email, reaction);

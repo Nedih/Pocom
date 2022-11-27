@@ -34,30 +34,30 @@ namespace Pocom.BLL.Services
             return false;
         }
 
-        public void DeleteAsync(string id)
+        public void Delete(string id)
         {
             var entity = _repository.FirstOrDefault(x => x.Id.ToString() == id);
             if (entity != null)
                 _repository.RemoveAndSave(entity);
         }
 
-        public Reaction FirstOrDefaultAsync(Func<Reaction, bool> predicate)
+        public Reaction FirstOrDefault(Func<Reaction, bool> predicate)
         {
             return _repository.FirstOrDefault(predicate);
         }
 
-        public IEnumerable<Reaction> GetAsync(Func<Reaction, bool> predicate)
+        public IEnumerable<Reaction> Get(Func<Reaction, bool> predicate)
         {
             return _repository.GetWhere(predicate).ToList();
         }
 
-        public IEnumerable<ReactionDTO> GetUserReactionsAsync(string email)
+        public IEnumerable<ReactionDTO> GetUserReactions(string email)
         {
             var reactions = _userManager.Users.Where(x => x.Email == email).Select(x => x.Reactions ).FirstOrDefault();
             return _mapper.Map<IEnumerable<ReactionDTO>>(reactions);
         }
 
-        public void UpdateAsync(Reaction item)
+        public void Update(Reaction item)
         {
             _repository.UpdateAndSave(item);
         }

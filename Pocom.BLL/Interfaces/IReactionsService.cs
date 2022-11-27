@@ -6,12 +6,12 @@ namespace Pocom.BLL.Interfaces
 {
     public interface IReactionService
     {
-        public IEnumerable<Reaction> GetAsync(Func<Reaction, bool> predicate);
-        public IEnumerable<ReactionDTO> GetUserReactionsAsync(string email);
-        public Reaction FirstOrDefaultAsync(Func<Reaction, bool> predicate);
+        public IEnumerable<Reaction> Get(Func<Reaction, bool> predicate);
+        public IEnumerable<ReactionDTO> GetUserReactions(string email);
+        public Reaction FirstOrDefault(Func<Reaction, bool> predicate);
         public Task<bool> CreateAsync(string email, ReactionDTO item);
-        public void UpdateAsync(Reaction item);
-        public void DeleteAsync(string id);
+        public void Update(Reaction item);
+        public void Delete(string id);
         Dictionary<ReactionType, int> GetPostReactions(Guid postId);
     }
 }

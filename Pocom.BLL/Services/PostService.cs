@@ -7,7 +7,6 @@ using Pocom.BLL.Models;
 using Microsoft.AspNetCore.Identity;
 using Pocom.BLL.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Pocom.DAL.Migrations;
 
 namespace Pocom.BLL.Services
 {
@@ -18,14 +17,14 @@ namespace Pocom.BLL.Services
         private readonly IReactionService _reactionService;
         private readonly UserManager<UserAccount> _userManager;
 
-        public PostService(IRepository<Post> repository, AutoMapper.IMapper mapper, IReactionService reactionService, UserManager<UserAccount> userManager)
+        public PostService(IRepository<Post> repository, IMapper mapper, IReactionService reactionService, UserManager<UserAccount> userManager)
         {
             _repository = repository;
             _mapper = mapper;
             _reactionService = reactionService;
             _userManager = userManager;
         }
-        public async Task<IdentityResult> CreateAsync(string email, PostDTO item)
+        public async Task<IdentityResult> Create(string email, PostDTO item)
         {
             var author = await _userManager.FindByEmailAsync(email);
             //var post = _mapper.Map<Post>(item);
@@ -35,29 +34,33 @@ namespace Pocom.BLL.Services
             }
             catch (Exception ex)
             {
-                return IdentityResult.Failed(new IdentityError { Code = ex.TargetSite.Name, Description = ex.Message });
+                return IdentityResult.Failed(new IdentityError { Code = ex.TargetSite?.Name, Description = ex.Message });
             }
             //await _repository.SaveAsync();
             return IdentityResult.Success;
         }
 
-        public void DeleteAsync(Guid id)
+        public void Delete(Guid id)
         {
             var entity = _repository.FirstOrDefault(x => x.Id == id);
             if (entity != null)
                 _repository.RemoveAndSave(entity);
         }
 
-        public PostDTO? FirstOrDefaultAsync(Func<Post, bool> predicate)
+        public PostDTO? GetPost(Guid id)
         {
-            return _mapper.Map<PostDTO>(_repository.Include(x => x.Author).FirstOrDefault(predicate));
+            return _mapper.Map<PostDTO>(_repository.Include(x => x.Author).FirstOrDefault(x=>x.Id== id));
         }
 
-        public IEnumerable<PostDTO> GetAsync(Func<Post, bool> predicate)
+        public IEnumerable<PostDTO> Get(Func<Post, bool> predicate)
         {
             return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(predicate));
         }
-        public IEnumerable<PostDTO> GetAsync(RequestViewModel vm)
+        public IEnumerable<PostDTO> GetAll()
+        {
+            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author));
+        }
+        public IEnumerable<PostDTO> Get(RequestViewModel vm)
         {
             const int pageSize = 5;
             IQueryable<Post> items = _repository.Include(x => x.Author);
@@ -87,11 +90,11 @@ namespace Pocom.BLL.Services
             return _mapper.Map<IEnumerable<PostDTO>>(items.Paginate(vm.Page,pageSize));
         }
 
-        public void UpdateAsync(PostDTO item)
+        public void Update(PostDTO item)
         {
             _repository.UpdateAndSave(_mapper.Map<Post>(item));
         }
-        public void UpdateTextAsync(Guid id,Guid authorId, string text)
+        public void UpdateText(Guid id,Guid authorId, string text)
         {
             var post = _repository.FirstOrDefault(x => x.Id == id && x.Author.Id == authorId.ToString());
             if (post != null)
@@ -116,11 +119,11 @@ namespace Pocom.BLL.Services
             return items;
         }
 
-        public async Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync(string email)
+        public async Task<IEnumerable<PostDTO>> GetUserReactionsPosts(string email)
         {
             var reactions = await _userManager.Users.Where(x => x.Email == email).Select(x => x.Reactions).FirstOrDefaultAsync();
             var allPosts = _repository.GetAll().Include(x => x.Reactions);
-            var result2 = reactions.Select(x => x.Post).Intersect(allPosts);
+            var result2 = reactions?.Select(x => x.Post).Intersect(allPosts);
             var result = new List<PostDTO>();
             foreach (var reaction in reactions)
             {

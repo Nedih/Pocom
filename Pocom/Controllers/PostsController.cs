@@ -23,60 +23,61 @@ public class PostsController : ControllerBase
     [HttpPost("query")]
     public IEnumerable<PostDTO> Index([FromBody] RequestViewModel vm)
     {
-        return _service.GetAsync(vm);
+        return _service.Get(vm);
     }
     [AllowAnonymous]
     [HttpGet]
     public IEnumerable<PostDTO> Index()
     {
-        return _service.GetAsync(new RequestViewModel());
+        return _service.GetAll();
     }
 
     [HttpDelete]
     public void Delete(Guid id)
     {
-        var post = _service.FirstOrDefaultAsync(x => x.Id == id);
-        if (post.Author == User.Identity.Name)
-            _service.DeleteAsync(id);
+        var post = _service.GetPost(id);
+        if (post == null) { return; }
+        if (post.Author == User.Identity?.Name)
+            _service.Delete(id);
     }
 
     [HttpPatch("edittext")]
     public void EditText([FromForm] Guid postId, [FromForm] Guid authorId, [FromForm] string text)
     {
-        _service.UpdateTextAsync(postId, authorId, text);
+        _service.UpdateText(postId, authorId, text);
     }
     [HttpGet("ownposts")]
     public IEnumerable<PostDTO> GetOwnPosts()
     {
-        return _service.GetAsync(x => x.Author.Email == User.Identity.Name).ToList();
+        return _service.Get(x => x.Author.Email == User.Identity?.Name).ToList();
     }
     [AllowAnonymous]
     [HttpGet("{id}")]
-    public PostDTO GetPost(Guid id)
+    public PostDTO? GetPost(Guid id)
     {
-        return _service.FirstOrDefaultAsync(x => x.Id == id);
+        return _service.GetPost(id);
     }
     [AllowAnonymous]
     [HttpGet("comments/{id}")]
     public IEnumerable<PostDTO> GetComments(Guid id)
     {
-        return _service.GetAsync(x => x.ParentPostId == id);
+        return _service.Get(x => x.ParentPostId == id);
     }
     [HttpGet("byemail")]
     public IEnumerable<PostDTO> GetByEmail([FromBody] string email)
     {
-        return _service.GetAsync(x => x.Author.Email == email).ToList();
+        return _service.Get(x => x.Author.Email == email).ToList();
     }
 
     [HttpPost]
     public async Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
     {
-        return await _service.CreateAsync(User?.Identity?.Name, postModel);
+        return await _service.Create(User?.Identity?.Name, postModel);
     }
 
     [HttpGet("user-reactions")]
     public async Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync()
     {
-        return await _service.GetUserReactionsPostsAsync(User?.Identity?.Name);
+        return await _service.GetUserReactionsPosts(User?.Identity?.Name);
     }
 }
