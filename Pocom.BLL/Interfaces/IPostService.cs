@@ -15,6 +15,6 @@ namespace Pocom.BLL.Interfaces
         public void UpdateTextAsync(Guid id, Guid authorId, string text);
         public void DeleteAsync(Guid id);
         public IEnumerable<PostDTO> Sort(IQueryable<PostDTO> items, string props);
-
+        Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync(string email);
     }
 }

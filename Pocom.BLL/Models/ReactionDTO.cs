@@ -1,10 +1,4 @@
-﻿using Pocom.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Pocom.DAL.Entities.Reaction;
+﻿using Pocom.DAL.Enums;
 
 namespace Pocom.BLL.Models
 {

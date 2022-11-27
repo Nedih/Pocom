@@ -1,4 +1,5 @@
 ﻿using Pocom.DAL.Entities;
+using Pocom.DAL.Enums;
 
 namespace Pocom.BLL.Models
 {
@@ -11,6 +12,7 @@ namespace Pocom.BLL.Models
         public string? Author { get; set; }
         public string? AuthorImage { get; set; }
         public Guid? ParentPostId { get; set; }
+        public Dictionary<ReactionType, int>? ReactionStats { get; set; }
         public IList<Reaction>? Reactions { get; set; } = new List<Reaction>();
     }
 }

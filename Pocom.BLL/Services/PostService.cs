@@ -7,6 +7,7 @@ using Pocom.BLL.Models;
 using Microsoft.AspNetCore.Identity;
 using Pocom.BLL.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Pocom.DAL.Migrations;
 
 namespace Pocom.BLL.Services
 {
@@ -14,12 +15,14 @@ namespace Pocom.BLL.Services
     {
         private readonly IRepository<Post> _repository;
         private readonly IMapper _mapper;
+        private readonly IReactionService _reactionService;
         private readonly UserManager<UserAccount> _userManager;
 
-        public PostService(IRepository<Post> repository, AutoMapper.IMapper mapper, UserManager<UserAccount> userManager)
+        public PostService(IRepository<Post> repository, AutoMapper.IMapper mapper, IReactionService reactionService, UserManager<UserAccount> userManager)
         {
             _repository = repository;
             _mapper = mapper;
+            _reactionService = reactionService;
             _userManager = userManager;
         }
         public async Task<IdentityResult> CreateAsync(string email, PostDTO item)
@@ -113,5 +116,24 @@ namespace Pocom.BLL.Services
             return items;
         }
 
+        public async Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync(string email)
+        {
+            var reactions = await _userManager.Users.Where(x => x.Email == email).Select(x => x.Reactions).FirstOrDefaultAsync();
+            var allPosts = _repository.GetAll().Include(x => x.Reactions);
+            var result2 = reactions.Select(x => x.Post).Intersect(allPosts);
+            var result = new List<PostDTO>();
+            foreach (var reaction in reactions)
+            {
+               var post = _repository.Include(x => x.Author).FirstOrDefault(x => x.Id == reaction.PostId);
+               if (post != null) 
+               {
+                    var model = _mapper.Map<PostDTO>(post);
+                    model.ReactionStats = _reactionService.GetPostReactions(post.Id);
+                    result.Add(model);
+               }
+            }
+
+            return result;
+        }
     }
 }

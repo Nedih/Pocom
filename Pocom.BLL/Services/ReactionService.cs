@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
 using Pocom.DAL.Entities;
+using Pocom.DAL.Enums;
 using Pocom.DAL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pocom.BLL.Services
 {
@@ -56,12 +51,10 @@ namespace Pocom.BLL.Services
             return _repository.GetWhere(predicate).ToList();
         }
 
-        public async Task<IEnumerable<ReactionDTO>> GetUserReactionsAsync(string email)
+        public IEnumerable<ReactionDTO> GetUserReactionsAsync(string email)
         {
-            var user = await _userManager.Users.Include(x => x.Reactions).FirstOrDefaultAsync(x => x.Email == email);
-            //_userManager.FindByEmailAsync(email).;
-            var reactions = user?.Reactions?.ToList();
-            return _mapper.Map<IEnumerable<ReactionDTO>>(user?.Reactions?.ToList()).AsQueryable();
+            var reactions = _userManager.Users.Where(x => x.Email == email).Select(x => x.Reactions ).FirstOrDefault();
+            return _mapper.Map<IEnumerable<ReactionDTO>>(reactions);
         }
 
         public void UpdateAsync(Reaction item)
@@ -69,5 +62,14 @@ namespace Pocom.BLL.Services
             _repository.UpdateAndSave(item);
         }
 
+        public Dictionary<ReactionType, int> GetPostReactions(Guid postId)
+        {
+            var result = new Dictionary<ReactionType, int>();
+            foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
+            {
+                result.Add(reaction, _repository.Count(x => x.Type == reaction));
+            }
+            return result;
+        }
     }
 }

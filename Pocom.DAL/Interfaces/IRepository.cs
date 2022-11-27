@@ -13,7 +13,9 @@ namespace Pocom.DAL.Interfaces
         void AddAndSave(TEntity entity);
         void UpdateAndSave(TEntity entity);
         void RemoveAndSave(TEntity entity);
+        IQueryable<TEntity> GetAll();
         IQueryable<TEntity> GetWhere(Func<TEntity, bool> predicate);
+        IQueryable<TEntity> GetWhere(Func<TEntity, bool> predicate, Func<TEntity, TEntity> selector);
         TEntity FirstOrDefault(Func<TEntity, bool> predicate);
         int Count(Func<TEntity, bool> predicate);
         IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties);

@@ -1,4 +1,5 @@
-﻿using Pocom.DAL.Interfaces;
+﻿using Pocom.DAL.Enums;
+using Pocom.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,6 @@ namespace Pocom.DAL.Entities
 {
     public class Reaction
     {
-        public enum ReactionType
-        {
-            Like,
-            Fire,
-            Dislike
-        }
-
         public Guid Id { get; set; } = Guid.NewGuid();
         public ReactionType Type { get; set; }
         public string AuthorId { get; set; }

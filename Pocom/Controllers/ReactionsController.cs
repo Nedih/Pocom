@@ -32,7 +32,7 @@ public class ReactionsController : ControllerBase
         string? email = User.Identity.Name;
         if (string.IsNullOrEmpty(email))
             return BadRequest("Email is empty");
-        var profile = await _service.GetUserReactionsAsync(email);
+        var profile = _service.GetUserReactionsAsync(email);
         if (profile == null)
             return NotFound("No such user with this email");
         return Ok(profile);

@@ -69,9 +69,14 @@ public class PostsController : ControllerBase
     }
 
     [HttpPost]
-    public Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
+    public async Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
     {
-        return _service.CreateAsync(User?.Identity?.Name, postModel);
+        return await _service.CreateAsync(User?.Identity?.Name, postModel);
     }
 
+    [HttpGet("user-reactions")]
+    public async Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync()
+    {
+        return await _service.GetUserReactionsPostsAsync(User?.Identity?.Name);
+    }
 }
