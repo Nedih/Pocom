@@ -67,7 +67,7 @@ namespace Pocom.BLL.Services
             var result = new Dictionary<ReactionType, int>();
             foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
             {
-                result.Add(reaction, _repository.Count(x => x.Type == reaction && x.Id == postId));
+                result.Add(reaction, _repository.Count(x => x.Type == reaction && x.PostId == postId));
             }
             return result;
         }

@@ -8,7 +8,7 @@ namespace Pocom.DAL.Enums
 {
     public enum ReactionType
     {
-        None = -1,
+        None = 0,
         Like,
         Fire,
         Dislike
