@@ -42,17 +42,17 @@ namespace Pocom.DAL.Repositories
         {
             return this._dbSet.Count(predicate);
         }
-        public void AddAndSave(TEntity entity)
+        public void Add(TEntity entity)
         {
             this._dbSet.Add(entity);
             this._context.SaveChanges();
         }
-        public void RemoveAndSave(TEntity entity)
+        public void Remove(TEntity entity)
         {
             this._dbSet.Remove(entity);
             this._context.SaveChanges();
         }
-        public void UpdateAndSave(TEntity entity)
+        public void Update(TEntity entity)
         {
             this._context.Entry(entity).State = EntityState.Modified;
             this._context.SaveChanges();
