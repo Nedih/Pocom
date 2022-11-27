@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
 using Pocom.DAL.Entities;
@@ -41,14 +42,14 @@ namespace Pocom.BLL.Services
                 _repository.RemoveAndSave(entity);
         }
 
-        public Reaction FirstOrDefault(Func<Reaction, bool> predicate)
+        public ReactionDTO FirstOrDefault(Func<Reaction, bool> predicate)
         {
-            return _repository.FirstOrDefault(predicate);
+            return _mapper.Map< ReactionDTO>(_repository.FirstOrDefault(predicate));
         }
 
-        public IEnumerable<Reaction> Get(Func<Reaction, bool> predicate)
+        public IEnumerable<ReactionDTO> Get(Func<Reaction, bool> predicate)
         {
-            return _repository.GetWhere(predicate).ToList();
+            return _mapper.Map<IEnumerable<ReactionDTO>>(_repository.GetWhere(predicate).ToList());
         }
 
         public IEnumerable<ReactionDTO> GetUserReactions(string email)
@@ -62,12 +63,14 @@ namespace Pocom.BLL.Services
             _repository.UpdateAndSave(item);
         }
 
-        public Dictionary<ReactionType, int> GetPostReactions(Guid postId)
+        public  Dictionary<ReactionType, int> GetPostReactions(Guid postId)
         {
             var result = new Dictionary<ReactionType, int>();
             foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
             {
-                result.Add(reaction, _repository.Count(x => x.Type == reaction && x.PostId == postId));
+                int number = _repository.GetWhere(x => x.Type == reaction && x.PostId == postId).Count();
+                result.Add(reaction, number);
+                    //_repository./*GetWhere(x => x.Type == reaction && x.PostId == postId).*/Count(x => x.Type == reaction && x.PostId == postId));
             }
             return result;
         }

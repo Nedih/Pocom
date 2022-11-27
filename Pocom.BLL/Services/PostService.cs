@@ -56,9 +56,18 @@ namespace Pocom.BLL.Services
         {
             return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(predicate));
         }
-        public IEnumerable<PostDTO> GetAll()
+        public async Task<IEnumerable<PostDTO>> GetAll(string email)
         {
-            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author));
+            var posts = _mapper.Map<IEnumerable<PostDTO>>(_repository.GetAll().Include(x => x.Author));
+            if (string.IsNullOrEmpty(email))
+                return posts;
+            else
+            {
+                var userReactedPosts = await GetUserReactionsPosts(email);
+                var t = userReactedPosts.UnionBy(posts, x => x.Id);
+                var result = new List<PostDTO>();
+                return t;
+            }
         }
         public IEnumerable<PostDTO> Get(RequestViewModel vm)
         {

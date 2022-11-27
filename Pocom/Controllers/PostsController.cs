@@ -27,9 +27,9 @@ public class PostsController : ControllerBase
     }
     [AllowAnonymous]
     [HttpGet]
-    public IEnumerable<PostDTO> Index()
+    public Task<IEnumerable<PostDTO>> Index()
     {
-        return _service.GetAll();
+        return _service.GetAll(User.Identity?.Name);
     }
 
     [HttpDelete]
@@ -72,12 +72,12 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
     {
-        return await _service.Create(User?.Identity?.Name, postModel);
+        return await _service.Create(User.Identity?.Name, postModel);
     }
 
     [HttpGet("user-reactions")]
     public async Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync()
     {
-        return await _service.GetUserReactionsPosts(User?.Identity?.Name);
+        return await _service.GetUserReactionsPosts(User.Identity?.Name);
     }
 }
