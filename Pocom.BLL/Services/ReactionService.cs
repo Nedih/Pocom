@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
+using Pocom.BLL.Models.ViewModels;
 using Pocom.DAL.Entities;
 using Pocom.DAL.Enums;
 using Pocom.DAL.Interfaces;
@@ -35,9 +36,9 @@ namespace Pocom.BLL.Services
             return false;
         }
 
-        public void Delete(string id)
+        public void Delete(ReactionViewModel model)
         {
-            var entity = _repository.FirstOrDefault(x => x.Id.ToString() == id);
+            var entity = _repository.FirstOrDefault(x => x.AuthorId == model.AuthorId.ToString() && x.PostId == model.PostId);
             if (entity != null)
                 _repository.RemoveAndSave(entity);
         }
@@ -58,9 +59,11 @@ namespace Pocom.BLL.Services
             return _mapper.Map<IEnumerable<ReactionDTO>>(reactions);
         }
 
-        public void Update(Reaction item)
+        public void Update(ReactionViewModel model)
         {
-            _repository.UpdateAndSave(item);
+            var reaction = _repository.FirstOrDefault(x => x.AuthorId == model.AuthorId.ToString() && x.PostId == model.PostId);
+            reaction.Type = model.ReactionType;
+            _repository.UpdateAndSave(reaction);
         }
 
         public  Dictionary<ReactionType, int> GetPostReactions(Guid postId)

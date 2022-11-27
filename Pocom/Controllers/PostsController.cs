@@ -27,9 +27,9 @@ public class PostsController : ControllerBase
     }
     [AllowAnonymous]
     [HttpGet]
-    public Task<IEnumerable<PostDTO>> Index()
+    public async Task<IEnumerable<PostDTO>> Index()
     {
-        return _service.GetAll(User.Identity?.Name);
+        return await _service.GetAll(User.Identity?.Name);
     }
 
     [HttpDelete]

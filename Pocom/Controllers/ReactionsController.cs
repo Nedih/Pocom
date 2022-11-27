@@ -11,6 +11,7 @@ using Pocom.BLL.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Pocom.BLL.Services;
+using Pocom.BLL.Models.ViewModels;
 
 namespace Pocom.Api.Controllers;
 
@@ -46,5 +47,19 @@ public class ReactionsController : ControllerBase
             return BadRequest("Email is empty");
         //await _service.CreateAsync(email, reaction);
         return Ok(await _service.CreateAsync(email, reaction));
+    }
+
+    [HttpPut]
+    public IActionResult PutReaction(ReactionViewModel reaction)
+    {
+        _service.Update(reaction);
+        return Ok();
+    }
+
+    [HttpDelete]
+    public IActionResult DeleteReaction(ReactionViewModel reaction)
+    {
+        _service.Delete(reaction);
+        return Ok();
     }
 }
