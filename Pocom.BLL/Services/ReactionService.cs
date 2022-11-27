@@ -42,14 +42,14 @@ namespace Pocom.BLL.Services
                 _repository.Remove(entity);
         }
 
-        public Reaction FirstOrDefault(Func<Reaction, bool> predicate)
+        public ReactionDTO FirstOrDefault(Func<Reaction, bool> predicate)
         {
-            return _repository.FirstOrDefault(predicate);
+            return _mapper.Map<ReactionDTO>(_repository.FirstOrDefault(predicate));
         }
 
-        public IEnumerable<Reaction> Get(Func<Reaction, bool> predicate)
+        public IEnumerable<ReactionDTO> Get(Func<Reaction, bool> predicate)
         {
-            return _repository.GetWhere(predicate).ToList();
+            return _mapper.Map<IEnumerable<ReactionDTO>>(_repository.GetWhere(predicate).ToList());
         }
 
         public IEnumerable<ReactionDTO> GetUserReactions(string email)
@@ -62,7 +62,7 @@ namespace Pocom.BLL.Services
         {
             var reaction = _repository.FirstOrDefault(x => x.AuthorId == model.AuthorId.ToString() && x.PostId == model.PostId);
             reaction.Type = model.ReactionType;
-            _repository.UpdateAndSave(reaction);
+            _repository.Update(reaction);
         }
 
         public Dictionary<ReactionType, int> GetPostReactions(Guid postId)
