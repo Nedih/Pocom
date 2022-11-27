@@ -132,6 +132,7 @@ namespace Pocom.BLL.Services
                {
                     var model = _mapper.Map<PostDTO>(post);
                     model.ReactionStats = _reactionService.GetPostReactions(post.Id);
+                    model.UserReactionType = reaction.Type;
                     result.Add(model);
                }
             }
