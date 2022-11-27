@@ -49,13 +49,13 @@ namespace Pocom.BLL.Services
 
         public async Task<PostDTO?> GetPostAsync(Guid id)
         {
-            return _mapper.Map<PostDTO>(await _repository.Include(x => x.Author).FirstOrDefaultAsync(x => x.Id == id));
+            return _mapper.Map<PostDTO>(await _repository.Include(x => x.Author).Include(x=>x.Reactions).FirstOrDefaultAsync(x => x.Id == id));
         }
         public IEnumerable<PostDTO> GetComments(Guid id)
         {
             return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(x => x.ParentPostId == id));
         }
-        public async Task<IEnumerable<PostDTO>> GetAllAsync(string email)
+        public async Task<IEnumerable<PostDTO>> GetAllAsync(string email = null)
         {
             var posts = _mapper.Map<IEnumerable<PostDTO>>(_repository.GetAll().Include(x => x.Author));
             if (!string.IsNullOrEmpty(email))
@@ -68,7 +68,7 @@ namespace Pocom.BLL.Services
                 var user = await _userManager.FindByEmailAsync(email);
                 foreach (var post in posts)
                 {
-                    post.ReactionStats = _reactionService.GetPostReactions(post.Id);
+                    //post.ReactionStats = _reactionService.GetPostReactions(post.Id);
                     post.UserReactionType = _reactionService.GetUserPostReaction(user.Id, post.Id);
                 }
             }
@@ -147,7 +147,7 @@ namespace Pocom.BLL.Services
                if (post != null) 
                {
                     var model = _mapper.Map<PostDTO>(post);
-                    model.ReactionStats = _reactionService.GetPostReactions(post.Id);
+                    //model.ReactionStats = _reactionService.GetPostReactions(post.Id);
                     model.UserReactionType = reaction.Type;
                     responsePosts.Add(model);
                }

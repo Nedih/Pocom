@@ -10,5 +10,6 @@
         public Guid? ParentPostId { get; set; }
         public Post? ParentPost { get; set; }
         public IList<Reaction>? Reactions { get; set; } = new List<Reaction>();
+        
     }
 }

@@ -13,7 +13,18 @@ namespace Pocom.BLL.Models
         public string? AuthorImage { get; set; }
         public Guid? ParentPostId { get; set; }
         public ReactionType? UserReactionType { get; set; }
-        public Dictionary<ReactionType, int>? ReactionStats { get; set; }
-        public IList<Reaction>? Reactions { get; set; } = new List<Reaction>();
+        public Dictionary<ReactionType, int>? ReactionStats
+        {
+            get
+            {
+                var result = new Dictionary<ReactionType, int>();
+                foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
+                {
+                    result.Add(reaction, Reactions.Count(x => x.Type == reaction));
+                }
+                return result;
+            }
+        }
+        public IList<ReactionDTO>? Reactions { get; set; } = new List<ReactionDTO>();
     }
 }
