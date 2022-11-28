@@ -28,7 +28,7 @@ namespace Pocom.BLL.Services
             if (t == null) 
             {
                 //_repository.AddAndSave(_mapper.Map<Reaction>(item));
-                var r = new Reaction { AuthorId = authorId, PostId = item.PostId, Type = (ReactionType)item.Type };
+                var r = new Reaction { AuthorId = authorId, PostId = item.PostId, Type = (ReactionType)item.ReactionType };
                 _repository.Add(r);
                 return true;
             }

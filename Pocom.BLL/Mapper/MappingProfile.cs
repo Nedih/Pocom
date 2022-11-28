@@ -14,8 +14,8 @@ namespace Pocom.BLL.Mapper
                 .ForMember(dest => dest.AuthorImage, opt => opt.MapFrom(x => x.Author.Image))
                 .ForMember(dest => dest.ParentPostId, opt => opt.MapFrom(x => x.ParentPostId))
                 .ForMember(dest => dest.UserReactionType, opt => opt.MapFrom((src, dest, _, context) => dest.GetUserReactionType(context.Items["userId"]?.ToString())));
-            CreateMap<Reaction, ReactionDTO>();
-            CreateMap<ReactionDTO, Reaction>();
+            CreateMap<Reaction, ReactionDTO>().ForMember(dest => dest.ReactionType, opt => opt.MapFrom(x => x.Type));
+            //CreateMap<ReactionDTO, Reaction>();
         }
     }
 }

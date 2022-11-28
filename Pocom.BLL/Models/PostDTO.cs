@@ -20,7 +20,7 @@ namespace Pocom.BLL.Models
                 var result = new Dictionary<ReactionType, int>();
                 foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
                 {
-                    result.Add(reaction, Reactions.Count(x => x.Type == reaction));
+                    result.Add(reaction, Reactions.Count(x => x.ReactionType == reaction));
                 }
                 return result;
             }
@@ -29,7 +29,7 @@ namespace Pocom.BLL.Models
 
         public ReactionType? GetUserReactionType(string? userId = "")
         {
-            return Reactions?.FirstOrDefault(x => x.AuthorId == userId)?.Type;
+            return Reactions?.FirstOrDefault(x => x.AuthorId == userId)?.ReactionType;
         }
     }
 }
