@@ -7,10 +7,10 @@ namespace Pocom.BLL.Interfaces
 {
     public interface IReactionService
     {
-        public IEnumerable<ReactionDTO> GetUserReactions(string email);
-        public Task<bool> CreateAsync(string email, ReactionDTO item);
-        public void Update(ReactionViewModel model);
-        public void Delete(ReactionViewModel model);
+        public IEnumerable<ReactionDTO> GetUserReactions(string authorId);
+        public bool Create(string authorId, ReactionDTO item);
+        public void Update(string authorId, ReactionViewModel model);
+        public void Delete(string authorId, ReactionViewModel model);
         Dictionary<ReactionType, int> GetPostReactions(Guid postId);
         ReactionType? GetUserPostReaction(string userId, Guid postId);
     }

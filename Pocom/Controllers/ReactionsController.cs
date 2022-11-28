@@ -12,6 +12,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Pocom.BLL.Services;
 using Pocom.BLL.Models.ViewModels;
+using System.Security.Claims;
 
 namespace Pocom.Api.Controllers;
 
@@ -28,38 +29,34 @@ public class ReactionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUserReactions()
+    public IActionResult GetUserReactions()
     {
-        string? email = User.Identity?.Name;
-        if (string.IsNullOrEmpty(email))
-            return BadRequest("Email is empty");
-        var profile = _service.GetUserReactions(email);
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var profile = _service.GetUserReactions(userId);
         if (profile == null)
-            return NotFound("No such user with this email");
+            return NotFound("No such user");
         return Ok(profile);
     }
 
     [HttpPost]
-    public async Task<IActionResult> PostReaction(ReactionDTO reaction)
+    public IActionResult PostReaction(ReactionDTO reaction)
     {
-        string? email = User.Identity?.Name;
-        if (string.IsNullOrEmpty(email))
-            return BadRequest("Email is empty");
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         //await _service.CreateAsync(email, reaction);
-        return Ok(await _service.CreateAsync(email, reaction));
+        return Ok(_service.Create(userId, reaction));
     }
 
     [HttpPut]
     public IActionResult PutReaction(ReactionViewModel reaction)
     {
-        _service.Update(reaction);
+        _service.Update(User.FindFirstValue(ClaimTypes.NameIdentifier), reaction);
         return Ok();
     }
 
     [HttpDelete]
     public IActionResult DeleteReaction(ReactionViewModel reaction)
     {
-        _service.Delete(reaction);
+        _service.Delete(User.FindFirstValue(ClaimTypes.NameIdentifier), reaction);
         return Ok();
     }
 }

@@ -21,36 +21,36 @@ namespace Pocom.BLL.Services
             _userManager = userManager;
             _mapper = mapper;
         }
-        public async Task<bool> CreateAsync(string email, ReactionDTO item)
+        public bool Create(string authorId, ReactionDTO item)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            Reaction t = _repository.FirstOrDefault(x => x.AuthorId == user.Id && x.PostId == item.PostId);
+            //var user = await _userManager.FindByIdAsync(authorId);
+            Reaction t = _repository.FirstOrDefault(x => x.AuthorId == authorId && x.PostId == item.PostId);
             if (t == null) 
             {
                 //_repository.AddAndSave(_mapper.Map<Reaction>(item));
-                var r = new Reaction { Author = user, PostId = item.PostId, Type = item.Type };
+                var r = new Reaction { AuthorId = authorId, PostId = item.PostId, Type = (ReactionType)item.Type };
                 _repository.Add(r);
                 return true;
             }
             return false;
         }
 
-        public void Delete(ReactionViewModel model)
+        public void Delete(string authorId, ReactionViewModel model)
         {
-            var entity = _repository.FirstOrDefault(x => x.AuthorId == model.AuthorId.ToString() && x.PostId == model.PostId);
+            var entity = _repository.FirstOrDefault(x => x.AuthorId == authorId && x.PostId == model.PostId);
             if (entity != null)
                 _repository.Remove(entity);
         }
 
-        public IEnumerable<ReactionDTO> GetUserReactions(string email)
+        public IEnumerable<ReactionDTO> GetUserReactions(string authorId)
         {
-            var reactions = _userManager.Users.Where(x => x.Email == email).Select(x => x.Reactions ).FirstOrDefault();
+            var reactions = _userManager.Users.Where(x => x.Id == authorId).Select(x => x.Reactions ).FirstOrDefault();
             return _mapper.Map<IEnumerable<ReactionDTO>>(reactions);
         }
 
-        public void Update(ReactionViewModel model)
+        public void Update(string authorId, ReactionViewModel model)
         {
-            var reaction = _repository.FirstOrDefault(x => x.AuthorId == model.AuthorId.ToString() && x.PostId == model.PostId);
+            var reaction = _repository.FirstOrDefault(x => x.AuthorId == authorId && x.PostId == model.PostId);
             reaction.Type = model.ReactionType;
             _repository.Update(reaction);
         }

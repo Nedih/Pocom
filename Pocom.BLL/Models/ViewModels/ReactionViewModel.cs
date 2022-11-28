@@ -10,7 +10,6 @@ namespace Pocom.BLL.Models.ViewModels
     public class ReactionViewModel
     {
         public Guid PostId { get; set; }
-        public Guid AuthorId { get; set; }
         public ReactionType ReactionType { get; set; }
     }
 }
