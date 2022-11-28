@@ -26,5 +26,10 @@ namespace Pocom.BLL.Models
             }
         }
         public IList<ReactionDTO>? Reactions { get; set; } = new List<ReactionDTO>();
+
+        public ReactionType? GetUserReactionType(string? userId = "")
+        {
+            return Reactions?.FirstOrDefault(x => x.AuthorId == userId)?.Type;
+        }
     }
 }

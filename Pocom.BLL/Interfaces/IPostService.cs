@@ -7,7 +7,7 @@ namespace Pocom.BLL.Interfaces
 {
     public interface IPostService
     {
-        public Task<IEnumerable<PostDTO>> GetAllAsync(string? email = null);
+        public IEnumerable<PostDTO> GetAll(string? email = null);
         public IEnumerable<PostDTO> Get(RequestViewModel vm);
         public Task<PostDTO?> GetPostAsync(Guid id);
         public IEnumerable<PostDTO> GetComments(Guid id);

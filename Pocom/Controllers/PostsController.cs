@@ -4,6 +4,7 @@ using Pocom.BLL.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Pocom.BLL.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Pocom.Api.Controllers;
 
@@ -27,9 +28,9 @@ public class PostsController : ControllerBase
     }
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IEnumerable<PostDTO>> IndexAsync()
+    public IEnumerable<PostDTO> IndexAsync()
     {
-        return await _service.GetAllAsync(User.Identity?.Name);
+        return _service.GetAll(User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 
     [HttpDelete]
@@ -82,6 +83,6 @@ public class PostsController : ControllerBase
     [HttpGet("user-reactions")]
     public async Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync()
     {
-        return await _service.GetUserReactionsPostsAsync(User.Identity?.Name);
+        return await _service.GetUserReactionsPostsAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 }
