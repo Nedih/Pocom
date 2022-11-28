@@ -39,7 +39,7 @@ public class ReactionsController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult PostReaction(ReactionDTO reaction)
+    public IActionResult PostReaction([FromBody] ReactionDTO reaction)
     {
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         //await _service.CreateAsync(email, reaction);
@@ -47,14 +47,14 @@ public class ReactionsController : ControllerBase
     }
 
     [HttpPut]
-    public IActionResult PutReaction(ReactionViewModel reaction)
+    public IActionResult PutReaction([FromBody] ReactionViewModel reaction)
     {
         _service.Update(User.FindFirstValue(ClaimTypes.NameIdentifier), reaction);
         return Ok();
     }
 
     [HttpDelete]
-    public IActionResult DeleteReaction(ReactionViewModel reaction)
+    public IActionResult DeleteReaction([FromBody] ReactionViewModel reaction)
     {
         _service.Delete(User.FindFirstValue(ClaimTypes.NameIdentifier), reaction);
         return Ok();

@@ -47,9 +47,9 @@ namespace Pocom.BLL.Services
                 _repository.Remove(entity);
         }
 
-        public async Task<PostDTO?> GetPostAsync(Guid id)
+        public async Task<PostDTO?> GetPostAsync(Guid id, string? userId = "")
         {
-            return _mapper.Map<PostDTO>(await _repository.Include(x => x.Author).Include(x=>x.Reactions).FirstOrDefaultAsync(x => x.Id == id));
+            return _mapper.Map<PostDTO>(await _repository.Include(x => x.Author).Include(x=>x.Reactions).FirstOrDefaultAsync(x => x.Id == id), opt => opt.Items["userId"] = userId);
         }
         public IEnumerable<PostDTO> GetComments(Guid id)
         {

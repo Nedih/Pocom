@@ -58,7 +58,7 @@ public class PostsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<PostDTO?> GetPost(Guid id)
     {
-        return await _service.GetPostAsync(id);
+        return await _service.GetPostAsync(id, User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
     [AllowAnonymous]
     [HttpGet("comments/{id}")]

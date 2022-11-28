@@ -9,7 +9,8 @@ namespace Pocom.BLL.Interfaces
     {
         public IEnumerable<PostDTO> GetAll(string? email = null);
         public IEnumerable<PostDTO> Get(RequestViewModel vm);
-        public Task<PostDTO?> GetPostAsync(Guid id);
+        //public Task<PostDTO?> GetPostAsync(Guid id);
+        public Task<PostDTO?> GetPostAsync(Guid id, string? userId = "");
         public IEnumerable<PostDTO> GetComments(Guid id);
         public Task<IdentityResult> CreateAsync(string email, PostDTO post);
         public void Update(PostDTO item);
