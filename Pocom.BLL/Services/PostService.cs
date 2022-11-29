@@ -51,9 +51,9 @@ namespace Pocom.BLL.Services
         {
             return _mapper.Map<PostDTO>(await _repository.Include(x => x.Author).Include(x=>x.Reactions).FirstOrDefaultAsync(x => x.Id == id), opt => opt.Items["userId"] = userId);
         }
-        public IEnumerable<PostDTO> GetComments(Guid id)
+        public IEnumerable<PostDTO> GetComments(Guid id, string? userId = "")
         {
-            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(x => x.ParentPostId == id));
+            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(x => x.ParentPostId == id), opt => opt.Items["userId"] = userId);
         }
         public IEnumerable<PostDTO> GetAll(string? userId = "")
         {
@@ -68,18 +68,20 @@ namespace Pocom.BLL.Services
             if (vm.Text != null)
             {
                 items = _repository
-                    .GetWhere(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
+                    .Include(x => x.Author)
+                    .Where(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
             }
 
             if (vm.Id != null)
             {
                 items = _repository
-                    .GetWhere(x => x.AuthorId == vm.Id);
+                    .Include(x => x.Author)
+                    .Where(x => x.AuthorId == vm.Id);
             }
 
             if (vm.SortBy == null)
             {
-                return _mapper.Map<IEnumerable<PostDTO>>(items);
+                return _mapper.Map<IEnumerable<PostDTO>>(items, opt => opt.Items["userId"] = vm.Id);
             }
             var sortByArray = vm.SortBy.Split(',');
             for (int i = 0; i < sortByArray.Length; i++)
@@ -88,7 +90,7 @@ namespace Pocom.BLL.Services
                     ? items.OrderBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"))
                     : items.ThenBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"));
             }
-            return _mapper.Map<IEnumerable<PostDTO>>(items.Paginate(vm.Page,pageSize));
+            return _mapper.Map<IEnumerable<PostDTO>>(items.Paginate(vm.Page,pageSize), opt => opt.Items["userId"] = vm.Id);
         }
 
         public void Update(PostDTO item)

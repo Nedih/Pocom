@@ -64,7 +64,7 @@ public class PostsController : ControllerBase
     [HttpGet("comments/{id}")]
     public IEnumerable<PostDTO> GetComments(Guid id)
     {
-        return _service.GetComments(id);
+        return _service.GetComments(id, User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
     [HttpGet("byemail")]
     public IEnumerable<PostDTO> GetByEmail()
