@@ -69,6 +69,7 @@ namespace Pocom.BLL.Services
             {
                 items = _repository
                     .Include(x => x.Author)
+                    .Include(x => x.Reactions)
                     .Where(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
             }
 
@@ -76,6 +77,7 @@ namespace Pocom.BLL.Services
             {
                 items = _repository
                     .Include(x => x.Author)
+                    .Include(x => x.Reactions)
                     .Where(x => x.AuthorId == vm.Id);
             }
 
