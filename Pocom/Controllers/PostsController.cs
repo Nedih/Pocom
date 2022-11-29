@@ -50,8 +50,8 @@ public class PostsController : ControllerBase
     [HttpGet("ownposts")]
     public IEnumerable<PostDTO> GetOwnPostsAsync()
     {
-        var vm = new RequestViewModel() { Email = User.Identity?.Name };
-        if(vm.Email==null) return new List<PostDTO>();
+        var vm = new RequestViewModel() { Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
+        if(vm.Id ==null) return new List<PostDTO>();
         return _service.Get(vm).ToList();
     }
     [AllowAnonymous]
@@ -67,9 +67,9 @@ public class PostsController : ControllerBase
         return _service.GetComments(id);
     }
     [HttpGet("byemail")]
-    public IEnumerable<PostDTO> GetByEmail([FromBody] string email)
+    public IEnumerable<PostDTO> GetByEmail()
     {
-        var vm = new RequestViewModel() { Email = email };
+        var vm = new RequestViewModel() { Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
 
         return _service.Get(vm);
     }

@@ -1,11 +1,19 @@
-﻿namespace Pocom.DAL.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Pocom.DAL.Entities
 {
     public class Post
     {
+        [Required]
         public Guid Id { get; set; } = Guid.NewGuid();
+        [Required]
         public string Text { get; set; }
+        [Required]
         public DateTime CreationDate { get; set; }
-        public string? Image { get; set; } 
+        public string? Image { get; set; }
+        [Required]
+        public string AuthorId { get; set; }
+        [Required]
         public UserAccount Author { get; set; }
         public Guid? ParentPostId { get; set; }
         public Post? ParentPost { get; set; }

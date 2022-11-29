@@ -71,10 +71,10 @@ namespace Pocom.BLL.Services
                     .GetWhere(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
             }
 
-            if (vm.Email != null)
+            if (vm.Id != null)
             {
                 items = _repository
-                    .GetWhere(x => x.Author.Email==vm.Email);
+                    .GetWhere(x => x.AuthorId == vm.Id);
             }
 
             if (vm.SortBy == null)
