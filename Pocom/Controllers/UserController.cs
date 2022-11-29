@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pocom.BLL.Interfaces;
 using Pocom.BLL.Models;
 using Pocom.BLL.Models.Identity;
+using System.Security.Claims;
 
 namespace Pocom.Api.Controllers
 {
@@ -59,7 +60,7 @@ namespace Pocom.Api.Controllers
         [HttpPut("email")]
         public async Task<IdentityResult> UpdateEmail([FromBody] string email)
         {
-            string? currentEmail = User.Identity.Name;
+            string? currentEmail = User.FindFirstValue(ClaimTypes.Name);
             return await _userService.UpdateEmail(currentEmail, email);
         }
 

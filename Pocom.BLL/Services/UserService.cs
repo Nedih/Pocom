@@ -99,7 +99,11 @@ namespace Pocom.BLL.Services
                 return IdentityResult.Failed(new IdentityError { Description = "There is no user with this Email.", Code = "WrongEmail" });
             var token = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
             IdentityResult result = await userManager.ChangeEmailAsync(user, newEmail, token);
-
+            if (result.Succeeded)
+            {
+                await userManager.SetUserNameAsync(user, newEmail);
+                await userManager.UpdateNormalizedUserNameAsync(user);
+            }           
             return result;
         }
 
