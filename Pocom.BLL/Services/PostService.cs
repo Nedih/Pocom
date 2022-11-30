@@ -49,16 +49,16 @@ namespace Pocom.BLL.Services
 
         public async Task<PostDTO?> GetPostAsync(Guid id, string? userId = "")
         {
-            return _mapper.Map<PostDTO>(await _repository.Include(x => x.Author).Include(x=>x.Reactions).FirstOrDefaultAsync(x => x.Id == id), opt => opt.Items["userId"] = userId);
+            return _mapper.Map<PostDTO>(await _repository.Include(x => x.Author).Include(x=>x.Reactions).FirstOrDefaultAsync(x => x.Id == id), opt => { opt.Items["userId"] = userId; opt.Items["isComment"] = "false"; });
         }
         public IEnumerable<PostDTO> GetComments(Guid id, string? userId = "")
         {
-            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Where(x => x.ParentPostId == id), opt => opt.Items["userId"] = userId);
+            return _mapper.Map<IEnumerable<PostDTO>>(_repository.Include(x => x.Author).Include(x => x.Reactions).Where(x => x.ParentPostId == id), opt => { opt.Items["userId"] = userId; opt.Items["isComment"] = "true"; });
         }
         public IEnumerable<PostDTO> GetAll(string? userId = "")
         {
             var posts = _mapper.Map<IEnumerable<PostDTO>>(_repository.GetAll().Include(x => x.Author).Include(x => x.Reactions),
-                opt => opt.Items["userId"] = userId);
+                opt => { opt.Items["userId"] = userId; opt.Items["isComment"] = "false"; });
             return posts;
         }
         public IEnumerable<PostDTO> Get(RequestViewModel vm)
@@ -83,7 +83,7 @@ namespace Pocom.BLL.Services
 
             if (vm.SortBy == null)
             {
-                return _mapper.Map<IEnumerable<PostDTO>>(items, opt => opt.Items["userId"] = vm.Id);
+                return _mapper.Map<IEnumerable<PostDTO>>(items, opt => { opt.Items["userId"] = vm.Id; opt.Items["isComment"] = "false"; });
             }
             var sortByArray = vm.SortBy.Split(',');
             for (int i = 0; i < sortByArray.Length; i++)
@@ -92,7 +92,7 @@ namespace Pocom.BLL.Services
                     ? items.OrderBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"))
                     : items.ThenBy(sortByArray[i].Replace(" desc", ""), sortByArray[i].EndsWith("desc"));
             }
-            return _mapper.Map<IEnumerable<PostDTO>>(items.Paginate(vm.Page,pageSize), opt => opt.Items["userId"] = vm.Id);
+            return _mapper.Map<IEnumerable<PostDTO>>(items.Paginate(vm.Page,pageSize), opt => { opt.Items["userId"] = vm.Id; opt.Items["isComment"] = "false"; });
         }
 
         public void Update(PostDTO item)
@@ -131,7 +131,7 @@ namespace Pocom.BLL.Services
             var allPosts = _repository.GetAll().Include(x => x.Reactions).Include(x => x.Author);
             var intersectedPosts = reactions.Select(x => x.Post).Intersect(allPosts);
             var posts = _mapper.Map<IEnumerable<PostDTO>>(intersectedPosts,
-                opt => opt.Items["userId"] = userId);
+                opt => { opt.Items["userId"] = userId; opt.Items["isComment"] = "false"; });
             return posts;
         }
     }

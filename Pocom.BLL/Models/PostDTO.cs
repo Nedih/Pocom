@@ -10,6 +10,8 @@ namespace Pocom.BLL.Models
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public string? Image { get; set; }
         public string? Author { get; set; }
+        public string? AuthorLogin { get; set; }
+        public string? AuthorName { get; set; }
         public string? AuthorImage { get; set; }
         public Guid? ParentPostId { get; set; }
         public ReactionType? UserReactionType { get; set; }
