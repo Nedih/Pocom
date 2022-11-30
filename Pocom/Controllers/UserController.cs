@@ -27,24 +27,39 @@ namespace Pocom.Api.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetUser(string email)
+        public async Task<IActionResult> GetUser(string id)
         {
-            var user = await _userService.GetUser(email);
+            var user = await _userService.GetUser(id);
             if (user == null)
                 return NotFound("No such user with this email");
             return Ok(user);
         }
 
+
+        [Authorize]
+        [HttpGet("profile/{login}")]
+        public IActionResult GetUserProfile(string? login)
+        {
+            string? userLogin = User.FindFirstValue(ClaimTypes.Name);
+            login ??= userLogin;
+            if (string.IsNullOrEmpty(login))
+                return BadRequest("Id is empty");
+            var profile = (ProfileDTO)_userService.GetUserByLogin(login);
+            if (profile == null)
+                return NotFound("No such user with this id");
+            return Ok(profile);
+        }
+
         [Authorize]
         [HttpGet("profile")]
-        public async Task<IActionResult> GetUserProfile()
+        public IActionResult GetOwnProfile()
         {
-            string? email = User.Identity.Name;
-            if (string.IsNullOrEmpty(email))
-                return BadRequest("Email is empty");
-            var profile = (ProfileDTO)await _userService.GetUser(email);
+            string? login = User.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(login))
+                return BadRequest("Id is empty");
+            var profile = (ProfileDTO)_userService.GetUserByLogin(login);
             if (profile == null)
-                return NotFound("No such user with this email");
+                return NotFound("No such user with this id");
             return Ok(profile);
         }
 
@@ -52,15 +67,15 @@ namespace Pocom.Api.Controllers
         [HttpPut("profile")]
         public async Task<IdentityResult> UpdateUserProfile([FromBody] ProfileDTO user)
         {
-            string? email = User.Identity.Name;
-            return await _userService.UpdateUser(email, user);
+            string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return await _userService.UpdateUser(id, user);
         }
 
         [Authorize]
         [HttpPut("email")]
         public async Task<IdentityResult> UpdateEmail([FromBody] string email)
         {
-            string? currentEmail = User.FindFirstValue(ClaimTypes.Name);
+            string? currentEmail = User.FindFirstValue(ClaimTypes.Email);
             return await _userService.UpdateEmail(currentEmail, email);
         }
 
@@ -68,8 +83,8 @@ namespace Pocom.Api.Controllers
         [HttpPut("password")]
         public async Task<IdentityResult> UpdatePassword([FromBody] ChangePasswordViewModel model)
         {
-            string? email = User.Identity.Name;
-            return await _userService.UpdatePassword(email, model);
+            string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return await _userService.UpdatePassword(id, model);
         }
 
         [Authorize(Roles = "Admin")]

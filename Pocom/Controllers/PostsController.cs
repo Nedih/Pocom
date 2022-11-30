@@ -50,7 +50,7 @@ public class PostsController : ControllerBase
     [HttpGet("ownposts")]
     public IEnumerable<PostDTO> GetOwnPostsAsync()
     {
-        var vm = new RequestViewModel() { Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
+        var vm = new RequestViewModel() { Login = User.FindFirstValue(ClaimTypes.Name), Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
         if(vm.Id ==null) return new List<PostDTO>();
         return _service.Get(vm).ToList();
     }
@@ -66,10 +66,10 @@ public class PostsController : ControllerBase
     {
         return _service.GetComments(id, User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
-    [HttpGet("byemail")]
-    public IEnumerable<PostDTO> GetByEmail()
+    [HttpGet("profile/{login}")]
+    public IEnumerable<PostDTO> GetByEmail(string login)
     {
-        var vm = new RequestViewModel() { Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
+        var vm = new RequestViewModel() { Login = login, Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
 
         return _service.Get(vm);
     }
@@ -77,7 +77,7 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
     {
-        return await _service.CreateAsync(User.Identity?.Name, postModel);
+        return await _service.CreateAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), postModel);
     }
 
     [HttpGet("user-reactions")]

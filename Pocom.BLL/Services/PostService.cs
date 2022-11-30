@@ -24,9 +24,9 @@ namespace Pocom.BLL.Services
             _reactionService = reactionService;
             _userManager = userManager;
         }
-        public async Task<IdentityResult> CreateAsync(string email, PostDTO item)
+        public async Task<IdentityResult> CreateAsync(string id, PostDTO item)
         {
-            var author = await _userManager.FindByEmailAsync(email);
+            var author = await _userManager.FindByIdAsync(id);
             //var post = _mapper.Map<Post>(item);
             try
             {
@@ -73,12 +73,12 @@ namespace Pocom.BLL.Services
                     .Where(x => x.Text.ToLower().Contains(vm.Text.ToLower()));
             }
 
-            if (vm.Id != null)
+            if (vm.Login != null)
             {
                 items = _repository
                     .Include(x => x.Author)
                     .Include(x => x.Reactions)
-                    .Where(x => x.AuthorId == vm.Id);
+                    .Where(x => x.Author.Login == vm.Login);
             }
 
             if (vm.SortBy == null)

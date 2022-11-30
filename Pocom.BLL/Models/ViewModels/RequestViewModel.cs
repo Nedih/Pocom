@@ -12,5 +12,7 @@ namespace Pocom.BLL.Models.ViewModels
         public string? Text { get; set; }
         public string? SortBy { get; set; }
         public string? Id { get; set; }
+        public string? Email { get; set; }
+        public string? Login { get; set; }
     }
 }

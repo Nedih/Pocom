@@ -100,7 +100,7 @@ namespace Pocom.BLL.Services
                 return new TokenModel { Exception = "Invalid access token or refresh token" };
             }
             string? token;
-            if (principal.FindFirstValue(ClaimTypes.Name) == user.Email)
+            if (principal.FindFirstValue(ClaimTypes.Email) == user.Email)
                 token = CreateTokenAsync(principal.Claims.ToList());
             else token = await CreateTokenAsync();
             return new TokenModel
@@ -138,8 +138,9 @@ namespace Pocom.BLL.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, _user.Email),
+                new Claim(ClaimTypes.Email, _user.Email),
                 new Claim(ClaimTypes.NameIdentifier, _user.Id),
+                 new Claim(ClaimTypes.Name, _user.Login),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             var roles = await _userManager.GetRolesAsync(_user);
