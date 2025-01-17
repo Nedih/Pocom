@@ -2,23 +2,15 @@ using Pocom.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Pocom.DAL.Entities;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Pocom.Api.Extensions;
-using Pocom.BLL.Interfaces;
-using Pocom.BLL.Services;
 using Microsoft.AspNetCore.Mvc;
-using Pocom.DAL.Interfaces;
-using Pocom.DAL.Repositories;
 using AutoMapper;
 using Pocom.BLL.Mapper;
-using Pocom.BLL.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddTransient<IRepository<Post>, Repository<Post>>();
-builder.Services.AddTransient<IPostService, PostService>();
 
 builder.Services.AddDbContext<PocomContext>(options =>
 {
@@ -57,10 +49,7 @@ builder.Services.AddControllers(config =>
 
 builder.Services.AddResponseCaching();
 
-builder.Services.AddTransient<IUserAuthService, UserAuthService>();
-builder.Services.AddTransient<IRepository<UserAccount>, Repository<UserAccount>>();
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IPostService, PostService>();
+builder.Services.AddApplication();
 
 var mapperConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
 var mapper = mapperConfig.CreateMapper();
@@ -90,9 +79,5 @@ app.UseAuthorization();
 app.UseCors("AllowAllOrigins");
 
 app.MapControllers();
-
-/*app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");*/
 
 app.Run();

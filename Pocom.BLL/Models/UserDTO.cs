@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pocom.BLL.Models
 {
-    public class UserDTO
+    public class UserDTO 
     {
         public string Id { get; set; }
         public string Name { get; set; }

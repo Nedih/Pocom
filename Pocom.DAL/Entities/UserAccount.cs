@@ -11,10 +11,13 @@ namespace Pocom.DAL.Entities
 {
     public class UserAccount : IdentityUser
     {
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string Login { get; set; }
+        [Required]
         public string DateOfBirth { get; set; }
-        public string PhoneNumber { get; set; }
+        //public string PhoneNumber { get; set; }
         public string? Image { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }

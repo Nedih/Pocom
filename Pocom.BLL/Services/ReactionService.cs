@@ -1,48 +1,73 @@
-﻿using Pocom.BLL.Interfaces;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Pocom.BLL.Interfaces;
+using Pocom.BLL.Models;
+using Pocom.BLL.Models.ViewModels;
 using Pocom.DAL.Entities;
+using Pocom.DAL.Enums;
 using Pocom.DAL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pocom.BLL.Services
 {
     public class ReactionService : IReactionService
     {
         private readonly IRepository<Reaction> _repository;
+        private readonly UserManager<UserAccount> _userManager;
+        private readonly IMapper _mapper;
 
-        public ReactionService(IRepository<Reaction> repository)
+        public ReactionService(IRepository<Reaction> repository, UserManager<UserAccount> userManager, IMapper mapper)
         {
             _repository = repository;
+            _userManager = userManager;
+            _mapper = mapper;
         }
-        public void CreateAsync(Reaction item)
+        public bool Create(string authorId, ReactionDTO item)
         {
-            _repository.AddAndSave(item);
+            //var user = await _userManager.FindByIdAsync(authorId);
+            Reaction t = _repository.FirstOrDefault(x => x.AuthorId == authorId && x.PostId == item.PostId);
+            if (t == null) 
+            {
+                //_repository.AddAndSave(_mapper.Map<Reaction>(item));
+                var r = new Reaction { AuthorId = authorId, PostId = item.PostId, Type = (ReactionType)item.ReactionType };
+                _repository.Add(r);
+                return true;
+            }
+            return false;
         }
 
-        public void DeleteAsync(string id)
+        public void Delete(string authorId, ReactionViewModel model)
         {
-            var entity = _repository.FirstOrDefault(x => x.Id.ToString() == id);
+            var entity = _repository.FirstOrDefault(x => x.AuthorId == authorId && x.PostId == model.PostId);
             if (entity != null)
-                _repository.RemoveAndSave(entity);
+                _repository.Remove(entity);
         }
 
-        public Reaction FirstOrDefaultAsync(Func<Reaction, bool> predicate)
+        public IEnumerable<ReactionDTO> GetUserReactions(string authorId)
         {
-            return _repository.FirstOrDefault(predicate);
+            var reactions = _userManager.Users.Where(x => x.Id == authorId).Select(x => x.Reactions ).FirstOrDefault();
+            return _mapper.Map<IEnumerable<ReactionDTO>>(reactions);
         }
 
-        public IEnumerable<Reaction> GetAsync(Func<Reaction, bool> predicate)
+        public void Update(string authorId, ReactionViewModel model)
         {
-            return _repository.GetWhere(predicate).ToList();
+            var reaction = _repository.FirstOrDefault(x => x.AuthorId == authorId && x.PostId == model.PostId);
+            reaction.Type = model.ReactionType;
+            _repository.Update(reaction);
         }
 
-        public void UpdateAsync(Reaction item)
+        public Dictionary<ReactionType, int> GetPostReactions(Guid postId)
         {
-            _repository.UpdateAndSave(item);
+            var result = new Dictionary<ReactionType, int>();
+            foreach (ReactionType reaction in Enum.GetValues(typeof(ReactionType)))
+            {
+                result.Add(reaction, _repository.Count(x => x.Type == reaction && x.PostId == postId));
+            }
+            return result;
         }
 
+        public ReactionType? GetUserPostReaction(string userId, Guid postId)
+        {
+            return _repository.FirstOrDefault(x => x.AuthorId == userId && x.PostId == postId)?.Type;
+        }
     }
 }

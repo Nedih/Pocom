@@ -10,10 +10,12 @@ namespace Pocom.DAL.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        void AddAndSave(TEntity entity);
-        void UpdateAndSave(TEntity entity);
-        void RemoveAndSave(TEntity entity);
+        void Add(TEntity entity);
+        void Update(TEntity entity);
+        void Remove(TEntity entity);
+        IQueryable<TEntity> GetAll();
         IQueryable<TEntity> GetWhere(Func<TEntity, bool> predicate);
+        IQueryable<TEntity> GetWhere(Func<TEntity, bool> predicate, Func<TEntity, TEntity> selector);
         TEntity FirstOrDefault(Func<TEntity, bool> predicate);
         int Count(Func<TEntity, bool> predicate);
         IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties);

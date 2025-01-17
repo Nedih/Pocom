@@ -21,12 +21,12 @@ namespace Pocom.BLL.Services
     {
         private readonly UserManager<UserAccount> userManager;
 
-        private readonly IRepository<UserAccount> repo;
+        private readonly IRepository<UserAccount> _repo;
         private readonly IMapper _mapper;
 
         public UserService(IRepository<UserAccount> repo, UserManager<UserAccount> userManager, AutoMapper.IMapper mapper)
         {
-            this.repo = repo;
+            _repo = repo;
             this.userManager = userManager;
             _mapper = mapper;
         }
@@ -36,14 +36,33 @@ namespace Pocom.BLL.Services
             return _mapper.Map<List<UserDTO>>(userManager.Users.ToList());
         }
 
-        public async Task<UserDTO> GetUser(string email)
+        public IEnumerable<ProfileDTO> GetUsersList()
         {
-            var user = await userManager.FindByEmailAsync(email);
+            var userModels = _mapper.Map<List<UserDTO>>(userManager.Users.ToList());
+            var profileModels = new List<ProfileDTO>();
+            foreach (var user in userModels)
+                profileModels.Add((ProfileDTO)user);
+            return profileModels;
+        }
+
+        public async Task<UserDTO> GetUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
             if (user != null)
             {
                 return _mapper.Map<UserDTO>(user);
             }
-            else return null;
+            else return new UserDTO();
+        }
+
+        public UserDTO GetUserByLogin(string login)
+        {
+            var user = _repo.FirstOrDefault(x => x.Login == login);
+            if (user != null)
+            {
+                return _mapper.Map<UserDTO>(user);
+            }
+            else return new UserDTO();
         }
 
         public async Task<IdentityResult> UpdateUser(string id, UserDTO userDto)
@@ -52,10 +71,10 @@ namespace Pocom.BLL.Services
             return await Update(user, userDto);
         }
 
-        public async Task<IdentityResult> UpdateUser(string email, ProfileDTO profile)
+        public async Task<IdentityResult> UpdateUser(string id, ProfileDTO profile)
         {
-            var user = await userManager.FindByEmailAsync(email);
-            return await Update(user, new UserDTO(user.Id, email, profile));
+            var user = await userManager.FindByIdAsync(id);
+            return await Update(user, new UserDTO(user.Id, user.Email, profile));
         }
 
         public async Task<IdentityResult> Update(UserAccount user, UserDTO userDto)
@@ -67,14 +86,14 @@ namespace Pocom.BLL.Services
 
             IdentityResult result = await userManager.UpdateAsync(user);
             if (result.Succeeded)
-                await repo.SaveAsync();
+                await _repo.SaveAsync();
 
             return result;
         }
 
-        public async Task<IdentityResult> UpdatePassword(string email, ChangePasswordViewModel model)
+        public async Task<IdentityResult> UpdatePassword(string id, ChangePasswordViewModel model)
         {
-            var user = await userManager.FindByEmailAsync(email);
+            var user = await userManager.FindByIdAsync(id);
             if (user == null)
                 return IdentityResult.Failed(new IdentityError { Description = "There is no user with this Email.", Code = "WrongEmail" });
             IdentityResult result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
@@ -90,7 +109,11 @@ namespace Pocom.BLL.Services
                 return IdentityResult.Failed(new IdentityError { Description = "There is no user with this Email.", Code = "WrongEmail" });
             var token = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
             IdentityResult result = await userManager.ChangeEmailAsync(user, newEmail, token);
-
+            if (result.Succeeded)
+            {
+                await userManager.SetUserNameAsync(user, newEmail);
+                await userManager.UpdateNormalizedUserNameAsync(user);
+            }           
             return result;
         }
 
@@ -104,7 +127,7 @@ namespace Pocom.BLL.Services
                 if (result.Errors.Count() == 0)
                 {
                     await userManager.AddToRoleAsync(user, "User");
-                    await repo.SaveAsync();
+                    await _repo.SaveAsync();
                 }
                 return result;
             }

@@ -1,15 +1,10 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Pocom.BLL.Interfaces;
-using Pocom.BLL.Extensions;
-using Pocom.DAL.Entities;
-using Pocom.Api.Extensions;
+using Pocom.BLL.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Hosting;
 using Pocom.BLL.Models;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Pocom.Api.Controllers;
 
@@ -19,69 +14,75 @@ namespace Pocom.Api.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly IPostService _service;
-    private readonly IMapper _mapper;
 
-    public PostsController(IPostService service, IMapper mapper)
+    public PostsController(IPostService service)
     {
-        this._service = service;
-        _mapper = mapper;
+        _service = service;
     }
 
-    [HttpGet]
-    public IEnumerable<PostDTO> Index(int page = 1, string? sortBy = null, string? text = null)
+    [AllowAnonymous]
+    [HttpPost("query")]
+    public IEnumerable<PostDTO> Index([FromBody] RequestViewModel vm)
     {
-        const int pageSize = 5;
-        IQueryable<PostDTO> items;
-        if (text != null)
-        {
-            items = _service.GetAsync(x => x.Text.ToLower().Contains(text.ToLower()));
-        }
-        else
-        {
-            items = _service.GetAsync(x => true);
-        }
-
-        return _service.Sort(items, sortBy)/*.Paginate(page ,pageSize)*/.ToList();
+        return _service.Get(vm);
+    }
+    [AllowAnonymous]
+    [HttpGet]
+    public IEnumerable<PostDTO> IndexAsync()
+    {
+        return _service.GetAll(User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 
     [HttpDelete]
-    public void Delete(Guid id)
+    public async void DeleteAsync(Guid id)
     {
-        var post = _service.FirstOrDefaultAsync(x => x.Id == id);
-        if (post.Author == User.Identity.Name)
-            _service.DeleteAsync(id);
+        var post = await _service.GetPostAsync(id);
+        if (post == null) { return; }
+        if (post.Author == User.Identity?.Name)
+            _service.Delete(id);
     }
 
     [HttpPatch("edittext")]
-    public void EditText([FromForm] Guid id, [FromForm] string text)
+    public void EditText([FromForm] Guid postId, [FromForm] Guid authorId, [FromForm] string text)
     {
-        var post = _service.FirstOrDefaultAsync(x => x.Id == id);
-        if (post.Author == User.Identity.Name)
-        {
-            post.Text = text;
-            _service.UpdateAsync(_mapper.Map<Post>(post));
-        }
+        _service.UpdateText(postId, authorId, text);
     }
     [HttpGet("ownposts")]
-    public IEnumerable<PostDTO> GetOwnPosts()
+    public IEnumerable<PostDTO> GetOwnPostsAsync()
     {
-        return _service.GetAsync(x => x.Author.Email == User.Identity.Name).ToList();
+        var vm = new RequestViewModel() { Login = User.FindFirstValue(ClaimTypes.Name), Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
+        if(vm.Id ==null) return new List<PostDTO>();
+        return _service.Get(vm).ToList();
     }
     [AllowAnonymous]
     [HttpGet("{id}")]
-    public PostDTO GetPost(Guid id)
+    public async Task<PostDTO?> GetPost(Guid id)
     {
-        return _service.FirstOrDefaultAsync(x => x.Id == id);
+        return await _service.GetPostAsync(id, User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
-    [HttpGet("byemail")]
-    public IEnumerable<PostDTO> GetByEmail([FromForm] string email)
+    [AllowAnonymous]
+    [HttpGet("comments/{id}")]
+    public IEnumerable<PostDTO> GetComments(Guid id)
     {
-        return _service.GetAsync(x => x.Author.Email == email).ToList();
+        return _service.GetComments(id, User.FindFirstValue(ClaimTypes.NameIdentifier));
+    }
+    [HttpGet("profile/{login}")]
+    public IEnumerable<PostDTO> GetByEmail(string login)
+    {
+        var vm = new RequestViewModel() { Login = login, Id = User.FindFirstValue(ClaimTypes.NameIdentifier) };
+
+        return _service.Get(vm);
     }
 
     [HttpPost]
-    public Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
+    public async Task<IdentityResult> CreatePost([FromBody] PostDTO postModel)
     {
-        return _service.CreateAsync(User?.Identity?.Name, postModel);
+        return await _service.CreateAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), postModel);
+    }
+
+    [HttpGet("user-reactions")]
+    public async Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync()
+    {
+        return await _service.GetUserReactionsPostsAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 }

@@ -1,23 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Pocom.BLL.Models;
+using Pocom.BLL.Models.ViewModels;
 using Pocom.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pocom.BLL.Interfaces
 {
     public interface IPostService
     {
-        public IQueryable<PostDTO> GetAsync(Func<Post, bool> predicate);
-        public PostDTO FirstOrDefaultAsync(Func<Post, bool> predicate);
-        public Task<IdentityResult> CreateAsync(string email, PostDTO post);
-        public void UpdateAsync(Post item);
-        public void DeleteAsync(Guid id);
-        public IQueryable<PostDTO> Sort(IQueryable<PostDTO> items, string props);
-
+        public IEnumerable<PostDTO> GetAll(string? email = null);
+        public IEnumerable<PostDTO> Get(RequestViewModel vm);
+        //public Task<PostDTO?> GetPostAsync(Guid id);
+        public Task<PostDTO?> GetPostAsync(Guid id, string? userId = "");
+        public IEnumerable<PostDTO> GetComments(Guid id, string? userId = "");
+        public Task<IdentityResult> CreateAsync(string id, PostDTO post);
+        public void Update(PostDTO item);
+        public void UpdateText(Guid id, Guid authorId, string text);
+        public void Delete(Guid id);
+        public Task<IEnumerable<PostDTO>> GetUserReactionsPostsAsync(string email);
     }
 }

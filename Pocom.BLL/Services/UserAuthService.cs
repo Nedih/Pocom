@@ -83,7 +83,7 @@ namespace Pocom.BLL.Services
             string? refreshToken = tokenModel.RefreshToken;
 
             ClaimsPrincipal? principal;
-            string username; 
+
             principal = GetPrincipalFromExpiredToken(accessToken);
 
             if (principal == null)
@@ -91,18 +91,21 @@ namespace Pocom.BLL.Services
                 return new TokenModel { Exception = "Invalid access token or refresh token" };
             }
 
-            username = principal.Identity.Name;
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
                 return new TokenModel { Exception = "Invalid access token or refresh token" };
             }
-
+            string? token;
+            if (principal.FindFirstValue(ClaimTypes.Email) == user.Email)
+                token = CreateTokenAsync(principal.Claims.ToList());
+            else token = await CreateTokenAsync();
             return new TokenModel
             {
-                AccessToken = CreateTokenAsync(principal.Claims.ToList()),
+                AccessToken = token,
                 RefreshToken = await GenerateRefreshToken(user)
             };
         }
@@ -135,7 +138,9 @@ namespace Pocom.BLL.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, _user.Email),
+                new Claim(ClaimTypes.Email, _user.Email),
+                new Claim(ClaimTypes.NameIdentifier, _user.Id),
+                 new Claim(ClaimTypes.Name, _user.Login),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             var roles = await _userManager.GetRolesAsync(_user);

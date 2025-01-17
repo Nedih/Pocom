@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pocom.DAL;
 
@@ -11,9 +12,10 @@ using Pocom.DAL;
 namespace Pocom.DAL.Migrations
 {
     [DbContext(typeof(PocomContext))]
-    partial class PocomContextModelSnapshot : ModelSnapshot
+    [Migration("20221126035012_ReactionsAddedKeyIDs")]
+    partial class ReactionsAddedKeyIDs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,6 +49,22 @@ namespace Pocom.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "37992d8a-dfd6-4752-a5f0-1075c6430ea0",
+                            ConcurrencyStamp = "de3c2193-ceff-49ad-84f4-3f9aaff08775",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "0a660f85-b947-4dd7-bbc8-c5363fd34a23",
+                            ConcurrencyStamp = "af63eb07-169f-400e-87ab-ea52cd66acce",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -162,7 +180,6 @@ namespace Pocom.DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AuthorId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreationDate")
@@ -184,7 +201,7 @@ namespace Pocom.DAL.Migrations
 
                     b.HasIndex("ParentPostId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Pocom.DAL.Entities.Reaction", b =>
@@ -209,7 +226,7 @@ namespace Pocom.DAL.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Reactions", (string)null);
+                    b.ToTable("Reactions");
                 });
 
             modelBuilder.Entity("Pocom.DAL.Entities.UserAccount", b =>
@@ -358,12 +375,10 @@ namespace Pocom.DAL.Migrations
                 {
                     b.HasOne("Pocom.DAL.Entities.UserAccount", "Author")
                         .WithMany("Posts")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
+                        .HasForeignKey("AuthorId");
 
                     b.HasOne("Pocom.DAL.Entities.Post", "ParentPost")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("ParentPostId");
 
                     b.Navigation("Author");
@@ -376,13 +391,13 @@ namespace Pocom.DAL.Migrations
                     b.HasOne("Pocom.DAL.Entities.UserAccount", "Author")
                         .WithMany("Reactions")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Pocom.DAL.Entities.Post", "Post")
                         .WithMany("Reactions")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Author");
@@ -399,6 +414,8 @@ namespace Pocom.DAL.Migrations
 
             modelBuilder.Entity("Pocom.DAL.Entities.Post", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Reactions");
                 });
 
